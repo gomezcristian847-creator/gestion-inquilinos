@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión La Coruña II</title>
+    <style>
+/* ================================================
+   GESTIÓN LA CORUÑA II - Versión Responsive
+   ================================================ */
+:root {
+    --primary: #2c3e50;
+    --accent: #27ae60;
+    --danger: #e74c3c;
+    --bg: #f4f7f6;
+    --text: #333;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background: var(--bg); padding: 10px; color: var(--text); }
+
+/* --- CONTENEDOR --- */
+.container {
+    max-width: 95%;
+    margin: 10px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    min-height: 85vh;
+}
+
+/* --- ENCABEZADO --- */
+header {
+    text-align: center;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+}
+header h1 { font-size: 1.8rem; color: var(--primary); }
+header p { font-size: 1rem; color: #7f8c8d; }
+
+/* --- NAVEGACIÓN --- */
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #eaeaea;
+    flex-wrap: wrap;
+}
+.nav-btn {
+    background: white;
+    color: var(--primary);
+    border: 2px solid #ccc !important;
+    padding: 12px 20px !important;
+    font-size: 16px !important;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+.nav-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+.btn-backup {
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px !important;
+    font-size: 16px !important;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.3s ease;
+}
+.btn-backup:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+/* --- BOTONES GENERALES --- */
+button {
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    display: inline-block;
+    text-align: center;
+}
+button:hover { transform: scale(1.05); filter: brightness(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+button:active { transform: scale(0.95); }
+.btn-add { background: var(--accent); color: white; padding: 12px 20px; font-size: 15px; }
+.btn-modificar-card { background: var(--primary); color: white; padding: 10px; width: 100%; margin-top: 12px; }
+.btn-guardar { background: var(--accent); color: white; padding: 14px !important; font-size: 16px !important; border-radius: 10px !important; flex: 2; }
+.btn-cancelar { background: #bdc3c7; color: white; padding: 14px !important; font-size: 16px !important; border-radius: 10px !important; flex: 1; }
+.btn-confirmar { background: #27ae60; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.btn-eliminar-cohabitante { background: #e74c3c; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+/* --- SECCIONES --- */
+#seccion-inicio, #seccion-lista, #seccion-registro-facturas, #seccion-pagos {
+    display: none; width: 100%; margin: 0 auto;
+}
+#seccion-inicio {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+}
+#seccion-inicio h3 { font-size: 28px; color: var(--primary); margin-bottom: 10px; }
+
+/* --- PANEL DE CONTROL --- */
+.menu-servicios {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
+}
+.btn-servicio {
+    background: white;
+    border: 2px solid var(--primary);
+    padding: 15px !important;
+    width: 100%;
+    height: 130px;
+    border-radius: 12px;
+    color: var(--primary);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 15px !important;
+    font-weight: bold;
+}
+.btn-servicio span { font-size: 36px !important; display: block; margin-bottom: 5px; transition: transform 0.3s ease; }
+.btn-servicio:hover { background: var(--primary) !important; color: white !important; transform: translateY(-4px) scale(1.03); box-shadow: 0 8px 20px rgba(44,62,80,0.2); }
+.btn-servicio:hover span { transform: scale(1.1); }
+
+/* --- GRID DE TARJETAS --- */
+.grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+.card { background: #fff; border: 1px solid #eee; padding: 18px; border-radius: 12px; border-left: 6px solid var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.card h4 { font-size: 18px; margin: 0 0 10px 0; color: var(--primary); }
+.card p { font-size: 14px; margin: 6px 0; color: #555; }
+
+/* --- CABECERA DE SECCIÓN --- */
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+
+/* --- MODALES --- */
+.modal {
+    display: none; position: fixed; z-index: 2000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    overflow-y: auto; flex-direction: column;
+}
+.modal-content {
+    background-color: #fff; margin: 4% auto; padding: 20px;
+    padding-bottom: 20px; border-radius: 12px; width: 95%;
+    max-width: 500px; max-height: 92vh; overflow-y: auto; position: relative;
+}
+.modal-content h3 { font-size: 22px; margin-bottom: 18px; color: var(--primary); text-align: center; }
+.modal-content label { font-size: 16px; font-weight: bold; margin-bottom: 6px; display: block; }
+.modal-actions { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; padding-bottom: 10px; }
+.modal-actions button { padding: 14px !important; font-size: 16px !important; border-radius: 10px !important; }
+
+/* --- FORMULARIO --- */
+.form-grid { display: grid; gap: 12px; }
+input, select, .input-form {
+    padding: 14px !important; font-size: 16px !important;
+    border: 1px solid #ddd; border-radius: 8px !important;
+    margin-bottom: 4px; outline: none; width: 100%;
+    text-transform: capitalize;
+}
+input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(39,174,96,0.2); }
+input[type="checkbox"] { width: auto; transform: scale(1.3); margin-right: 8px; padding: 0 !important; text-transform: none; }
+input[type="number"] { text-transform: none; }
+input[type="date"] { text-transform: none; }
+input[type="password"] { text-transform: none; }
+
+/* --- CHECKLIST --- */
+.servicios-checklist {
+    margin-top: 15px; padding: 15px !important; background: #f9f9f9;
+    border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px !important;
+}
+.servicios-checklist h4 { grid-column: 1 / -1; margin: 0 0 5px 0; color: var(--primary); }
+.servicios-checklist label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px !important; font-weight: normal !important; }
+
+/* --- SECCIÓN PAGOS --- */
+.meses-columna { display: flex; flex-direction: column; gap: 5px; }
+.meses-columna button { width: 100%; padding: 10px; margin-bottom: 4px; border: none; background: white; border-radius: 5px; cursor: pointer; text-align: left; transition: 0.3s; font-size: 14px; }
+.meses-columna button.active { background: var(--primary); color: white; }
+.btn-mes-lateral { text-align: left; padding: 10px; border: none; background: white; border-radius: 5px; cursor: pointer; font-weight: bold; color: #2c3e50; font-size: 14px; }
+.btn-mes-lateral:hover { background: #e0e0e0; }
+.btn-mes-lateral.active { background: #3498db; color: white; }
+.status-pendiente { color: var(--danger); font-weight: bold; }
+.status-al-dia { color: #27ae60; font-weight: bold; }
+
+/* ================================================
+   RESPONSIVE - PANTALLAS GRANDES (PC)
+   ================================================ */
+@media (min-width: 768px) {
+    body { padding: 20px; }
+    .container { padding: 40px; }
+    header h1 { font-size: 3rem; }
+    header p { font-size: 1.2rem; }
+    .main-nav { justify-content: space-between; padding: 20px 30px; }
+    .nav-btn { padding: 20px 40px !important; font-size: 20px !important; }
+    .btn-backup { padding: 20px 40px !important; font-size: 20px !important; }
+    #seccion-inicio h3 { font-size: 42px; }
+    .menu-servicios { grid-template-columns: repeat(4, 1fr); max-width: 100%; gap: 25px; margin-top: 40px; }
+    .btn-servicio { height: 220px; font-size: 22px !important; }
+    .btn-servicio span { font-size: 60px !important; }
+    .grid-container { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 25px; }
+    .card h4 { font-size: 22px; }
+    .card p { font-size: 16px; }
+    .modal-content { width: 90%; padding: 30px; }
+    .modal-content h3 { font-size: 28px; }
+    .modal-content label { font-size: 20px; }
+    input, select, .input-form { padding: 18px !important; font-size: 20px !important; }
+    .btn-guardar { padding: 18px !important; font-size: 20px !important; }
+    .btn-cancelar { padding: 18px !important; font-size: 20px !important; }
+    .modal-actions button { padding: 18px !important; font-size: 20px !important; }
+    .servicios-checklist label { font-size: 17px !important; }
+}
+    </style>
+</head>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_PROYECTO.firebaseapp.com",
+    projectId: "TU_PROYECTO",
+    storageBucket: "TU_PROYECTO.appspot.com",
+    messagingSenderId: "TU_ID",
+    appId: "TU_ID_APP"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
+<body>
+    <!-- PANTALLA DE ACCESO INICIAL -->
+<div id="pantalla-auth" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh;">
+    <h2 style="margin-bottom: 20px; color: var(--primary);">Acceso al Sistema</h2>
+    
+    <div id="opciones-auth" class="menu-servicios" style="display: grid;">
+        <button class="btn-servicio" onclick="mostrarLogin()"><span>🔑</span>Ingresar</button>
+        <button class="btn-servicio" onclick="mostrarRegistro()"><span>📝</span>Crear Cuenta</button>
+        <button class="btn-servicio" onclick="entrarInvitado()"><span>👤</span>Invitado</button>
+    </div>
+
+    <!-- Formulario de Login -->
+    <div id="form-login" class="modal-content" style="display:none; max-width: 400px; margin-top: 20px;">
+        <h3>Iniciar Sesión</h3>
+        <input type="email" id="login-email" placeholder="Correo electrónico" class="input-form">
+        <input type="password" id="login-pass" placeholder="Contraseña" class="input-form">
+        <button onclick="loginEmail()" class="btn-guardar" style="width: 100%;">Entrar</button>
+        <p onclick="restablecerPass()" style="text-align: center; cursor: pointer; color: var(--primary); margin-top: 10px; font-size: 14px;">¿Olvidaste tu contraseña?</p>
+        <button onclick="regresarAuth()" class="btn-cancelar" style="width: 100%; margin-top: 10px;">Volver</button>
+    </div>
+
+    <!-- Formulario de Registro -->
+    <!-- Contenedor Principal de Acceso -->
+<div id="auth-container">
+  <h2>Bienvenido al Sistema</h2>
+  
+  <div id="opciones-iniciales">
+    <button onclick="mostrarLogin()">Ingresar a cuenta</button>
+    <button onclick="mostrarRegistro()">Crear cuenta</button>
+    <button onclick="entrarInvitado()">Modo Invitado</button>
+  </div>
+
+  <form id="login-form" style="display:none;">
+    <input type="email" id="login-email" placeholder="Correo electrónico" required>
+    <input type="password" id="login-pass" placeholder="Contraseña" required>
+    <button type="submit">Entrar</button>
+    <p onclick="recuperarClave()">¿Olvidaste tu contraseña?</p>
+  </form>
+
+  <form id="register-form" style="display:none;">
+    <input type="text" id="reg-user" placeholder="Nombre de Usuario" required>
+    <input type="text" id="reg-nombre" placeholder="Nombre Completo" required>
+    <input type="tel" id="reg-tel" placeholder="Teléfono" required>
+    <input type="email" id="reg-email" placeholder="Correo electrónico" required>
+    <input type="password" id="reg-pass" placeholder="Contraseña" required>
+    <button type="submit">Registrar</button>
+  </form>
+</div>
+</div>
+
+<!-- Envolvemos el resto de tu contenido actual -->
+<div id="contenido-app" style="display: none;">
+    <div class="container">
+        <header>
+    <h1 id="titulo-principal">Gestión de Cohabitantes</h1>
+    <p id="subtitulo-principal">Mi pequeña ciudad</p>
+</header>
+        <nav class="main-nav">
+            <button class="nav-btn" onclick="mostrarSeccion('inicio')">Inicio</button>
+            <button class="nav-btn" onclick="mostrarSeccion('lista')">Lista de Cohabitantes</button>
+        </nav>
+        <section id="seccion-inicio">
+            <div style="text-align: center; padding: 20px; width:100%;">
+                <h3 style="color: #2c3e50;">Panel de Control</h3>
+                <div class="menu-servicios">
+                    <button class="btn-servicio" onclick="abrirModalFactura()">
+                        <span>📄</span>Agregar Facturas
+                    </button>
+                    <button class="btn-servicio" onclick="mostrarSeccion('registro-facturas')">
+                        <span>📊</span>Registro de facturas
+                    </button>
+                    <button class="btn-servicio" onclick="abrirModalReporte()">
+                        <span>📧</span>Generar Mandamiento
+                    </button>
+                    <button class="btn-servicio" onclick="administrarPagos()">
+                        <span>💰</span>Historial de pagos
+                    </button>
+                </div>
+            </div>
+        </section>
+        <section id="seccion-lista" style="display:none;">
+            <div class="section-header">
+                <h2>Directorio Actual</h2>
+                <button id="btn-abrir-modal" class="btn-add">+ Agregar Nuevo</button>
+            </div>
+            <div id="grid-cohabitantes" class="grid-container"></div>
+        </section>
+        <section id="seccion-registro-facturas" style="display:none;">
+            <div class="section-header">
+                <h2>Historial de Recibos</h2>
+                <button class="nav-btn" onclick="mostrarSeccion('inicio')">Volver al Inicio</button>
+            </div>
+            <div id="grid-facturas" class="grid-container"></div>
+        </section>
+        <section id="seccion-pagos" style="display:none;">
+            <div class="section-header">
+                <h2>Control de Pagos y Moras</h2>
+                <button class="nav-btn" onclick="mostrarSeccion('inicio')">Volver al Inicio</button>
+            </div>
+            <div style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
+                <div style="width: 150px; background: #f4f4f4; padding: 12px; border-radius: 10px;">
+                    <h4 style="margin-bottom:8px;">Seleccionar Mes</h4>
+                    <div id="lista-meses-pago" class="meses-columna"></div>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <h3 id="titulo-mes-seleccionado">Mes: ---</h3>
+                    <div id="contenedor-estado-pagos"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODAL REGISTRAR PAGO -->
+        <div id="modal-registrar-pago" class="modal">
+            <div class="modal-content" style="max-width: 400px;">
+                <h3>Registrar Pago</h3>
+                <p id="info-pago-cohabitante"></p>
+                <div class="form-grid">
+                    <label>Fecha de Recibido:</label>
+                    <input type="date" id="fecha-pago-real">
+                    <label>Monto Recibido ($):</label>
+                    <input type="number" id="monto-pago-recibido" step="0.01">
+                </div>
+                <div class="modal-actions">
+                    <button onclick="cerrarModalPago()" class="btn-cancelar">Cancelar</button>
+                    <button onclick="guardarPagoFinal()" class="btn-guardar">Confirmar Pago</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONTRASEÑA -->
+    <div id="modal-password" class="modal">
+        <div class="modal-content" style="max-width: 320px;">
+            <h3>Seguridad</h3>
+            <p>Ingresa la clave:</p>
+            <input type="password" id="input-pass" placeholder="Contraseña" style="width: 100%; box-sizing: border-box; margin-bottom: 15px;">
+            <div class="modal-actions">
+                <button id="btn-cancelar-pass" class="btn-cancelar">Cancelar</button>
+                <button id="btn-confirmar-pass" class="btn-guardar">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL COHABITANTE -->
+    <div id="modal-formulario" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-titulo">Registro de Cohabitante</h3>
+            <form id="form-cohabitante">
+                <div class="form-grid">
+                    <input type="text" id="nombre1" placeholder="Primer Nombre *" required>
+                    <input type="text" id="nombre2" placeholder="Segundo Nombre">
+                    <input type="text" id="apellido1" placeholder="Primer Apellido *" required>
+                    <input type="text" id="apellido2" placeholder="Segundo Apellido">
+                    <input type="number" id="num-personas" placeholder="N° de Personas" min="1" value="1" required>
+                    <input type="text" id="telefono" placeholder="Teléfono (####-####) *" maxlength="9" required>
+                    <input type="text" id="dui" placeholder="DUI (########-#) *" maxlength="10" required>
+                    <input type="number" id="alquiler" placeholder="Monto de Alquiler ($) *" step="0.01" min="0" required>
+                </div>
+                <div class="servicios-checklist">
+                    <h4>Servicios Opcionales</h4>
+                    <label><input type="checkbox" id="chk-internet"> Internet</label>
+                    <label><input type="checkbox" id="chk-lavadora"> Lavadora ($5.00)</label>
+                    <label><input type="checkbox" id="chk-refrigeradora"> Refrigeradora ($2.00)</label>
+                    <label><input type="checkbox" id="chk-cocina"> Cocina y Gas ($1.52)</label>
+                </div>
+                <div id="contenedor-botones-nuevo" class="modal-actions">
+                    <button type="button" id="btn-cerrar-modal" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn-guardar">Guardar Registro</button>
+                </div>
+                <div id="contenedor-botones-edicion" class="modal-actions" style="display:none; flex-direction:column; gap:10px;">
+                    <button id="btn-confirmar-cambios" class="btn-guardar">Confirmar Cambios</button>
+                    <button id="btn-eliminar-cohabitante" class="btn-cancelar" style="background: var(--danger); margin-top: 10px; width: 100%;">Eliminar Permanentemente</button>
+                    <div id="btn-regresar-opciones" style="text-align:center; margin-top:20px; cursor:pointer; color: #7f8c8d;">Volver</div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL FACTURA -->
+    <div id="modal-factura" class="modal">
+        <div class="modal-content">
+            <h3 id="titulo-modal-factura">Registrar Recibo</h3>
+            <form id="form-factura">
+                <div class="form-grid">
+                    <label>Tipo de Servicio:</label>
+                    <select id="tipo-servicio" required>
+                        <option value="Recibo de Agua">Recibo de Agua</option>
+                        <option value="Recibo de Luz">Recibo de Luz</option>
+                    </select>
+                    <label>Mes correspondiente:</label>
+                    <select id="mes-factura" required>
+                        <option value="Enero">Enero</option>
+                        <option value="Febrero">Febrero</option>
+                        <option value="Marzo">Marzo</option>
+                        <option value="Abril">Abril</option>
+                        <option value="Mayo">Mayo</option>
+                        <option value="Junio">Junio</option>
+                        <option value="Julio">Julio</option>
+                        <option value="Agosto">Agosto</option>
+                        <option value="Septiembre">Septiembre</option>
+                        <option value="Octubre">Octubre</option>
+                        <option value="Noviembre">Noviembre</option>
+                        <option value="Diciembre">Diciembre</option>
+                    </select>
+                    <label>Monto ($):</label>
+                    <input type="number" id="monto-factura" step="0.01" placeholder="0.00" required>
+                </div>
+                <div id="btns-factura-nuevo" class="modal-actions">
+                    <button type="button" onclick="cerrarModalFactura()" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn-guardar">Guardar Factura</button>
+                </div>
+                <div id="btns-factura-edicion" class="modal-actions" style="display:none; flex-direction:column; gap:10px;">
+                    <button type="button" id="btn-update-factura" class="btn-guardar">Confirmar Cambios</button>
+                    <button type="button" id="btn-delete-factura" class="btn-cancelar" style="background:var(--danger)">Eliminar Permanentemente</button>
+                    <button type="button" onclick="cerrarModalFactura()" style="border:none; background:none; cursor:pointer; color:gray; padding:10px;">Volver</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL REPORTE -->
+    <div id="modal-reporte" class="modal">
+        <div class="modal-content">
+            <h3>Generar Mandamiento de Pago</h3>
+            <label>Seleccionar Cohabitante:</label>
+            <select id="select-cohabitante-reporte" class="input-form"></select>
+            <label>Mes a Cobrar:</label>
+            <select id="mes-reporte" class="input-form">
+                <option value="Enero">Enero</option>
+                <option value="Febrero">Febrero</option>
+                <option value="Marzo">Marzo</option>
+                <option value="Abril">Abril</option>
+                <option value="Mayo">Mayo</option>
+                <option value="Junio">Junio</option>
+                <option value="Julio">Julio</option>
+                <option value="Agosto">Agosto</option>
+                <option value="Septiembre">Septiembre</option>
+                <option value="Octubre">Octubre</option>
+                <option value="Noviembre">Noviembre</option>
+                <option value="Diciembre">Diciembre</option>
+            </select>
+            <label>Fecha de Pago Real (Para la Mora):</label>
+            <input type="date" id="fecha-mandamiento-manual" class="input-form">
+            <label>Otros Gastos (Opcional):</label>
+            <input type="number" id="gasto-manual" class="input-form" placeholder="0.00">
+            <label>Nota de Otros Gastos:</label>
+            <input type="text" id="nota-manual" class="input-form" placeholder="Ej: Reparación de chapa">
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn-guardar" onclick="generarMandamiento()">Imprimir y Registrar</button>
+                <button class="btn-cancelar" onclick="cerrarModalReporte()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// --- VARIABLES GLOBALES ---
+let CLAVE_CORRECTA = "";
+let modoInvitado = false;
+// --- FUNCIONES DE NAVEGACIÓN AUTH ---
+function mostrarLogin() {
+    document.getElementById('opciones-auth').style.display = 'none';
+    document.getElementById('form-login').style.display = 'block';
+}
+
+function mostrarRegistro() {
+    document.getElementById('opciones-auth').style.display = 'none';
+    document.getElementById('form-registro').style.display = 'block';
+}
+
+function regresarAuth() {
+    document.getElementById('opciones-auth').style.display = 'grid';
+    document.getElementById('form-login').style.display = 'none';
+    document.getElementById('form-registro').style.display = 'none';
+}
+
+let tituloPersonalizado = "Mi Pequeña Ciudad"; // Valor por defecto para invitado
+// Función para el "Ojito"
+function toggleVer(idInput) {
+    const input = document.getElementById(idInput);
+    input.type = (input.type === "password") ? "text" : "password";
+}
+
+// ARREGLO PARA EL BOTÓN DE INVITADO
+function entrarInvitado() {
+
+    modoInvitado = true;
+    tituloPersonalizado = "Mi Pequeña Ciudad";
+    CLAVE_CORRECTA = "1234"; // PIN por defecto para invitados
+    
+    document.getElementById('titulo-principal').innerText = tituloPersonalizado;
+    document.getElementById('subtitulo-principal').innerText = "Modo Invitado - Acceso Temporal";
+    
+    // Ejecutamos la función que muestra la app
+    iniciarApp(); 
+}
+
+// ACTUALIZACIÓN DE CREAR CUENTA (Para guardar el PIN)
+async function crearCuenta() {
+    const email = document.getElementById('reg-email').value;
+    const pass = document.getElementById('reg-pass').value;
+    const user = document.getElementById('reg-user').value;
+    const pin = document.getElementById('reg-pin').value;
+    const titulo = document.getElementById('reg-titulo').value || "Mi Proyecto";
+
+    if(pin.length < 6) return alert("El PIN debe tener al menos 6 números");
+
+    try {
+        const cred = await auth.createUserWithEmailAndPassword(email, pass);
+        await db.collection("usuarios").doc(user).set({
+            nombre: document.getElementById('reg-full').value,
+            correo: email,
+            tituloApp: titulo,
+            pinSeguridad: pin, // Guardamos tu PIN personalizado
+            uid: cred.user.uid
+        });
+
+        tituloPersonalizado = titulo;
+        CLAVE_CORRECTA = pin; // Actualizamos la clave en la sesión actual
+        alert("¡Cuenta creada! Tu PIN de seguridad es: " + pin);
+        actualizarInterfaz();
+        iniciarApp();
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+}
+function iniciarApp() {
+    document.getElementById('pantalla-auth').style.display = 'none';
+    document.getElementById('contenido-app').style.display = 'block';
+    actualizarInterfaz(); // Para que ponga el nombre de la urbanización
+    mostrarSeccion('inicio');
+}
+// ACTUALIZACIÓN DE LOGIN (Para recuperar el PIN)
+function loginEmail() {
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-pass').value;
+
+    auth.signInWithEmailAndPassword(email, pass)
+        .then(async (userCredential) => {
+            const snapshot = await db.collection("usuarios").where("uid", "==", userCredential.user.uid).get();
+            if (!snapshot.empty) {
+                const datos = snapshot.docs[0].data();
+                tituloPersonalizado = datos.tituloApp;
+                CLAVE_CORRECTA = datos.pinSeguridad; // Recuperamos TU pin de la nube
+            }
+            actualizarInterfaz();
+            iniciarApp();
+        })
+        .catch(error => alert("Credenciales incorrectas."));
+}
+// Esta función cambia el texto visualmente antes de entrar
+function actualizarInterfaz() {
+    document.getElementById('titulo-principal').innerText = tituloPersonalizado;
+    // Opcional: si quieres que el subtítulo también sea genérico en invitado
+    if(modoInvitado) {
+        document.getElementById('subtitulo-principal').innerText = "Modo Invitado - Acceso Temporal";
+    }
+}
+function restablecerPass() {
+    const email = document.getElementById('login-email').value;
+    if (!email) return alert("Ingresa tu correo para enviarte el código.");
+    auth.sendPasswordResetEmail(email)
+        .then(() => alert("Se ha enviado un enlace a tu correo para cambiar la contraseña."))
+        .catch(err => alert(err.message));
+}
+let cohabitantes = JSON.parse(localStorage.getItem('lista_cohabitantes')) || [];
+let facturas = JSON.parse(localStorage.getItem('lista_facturas')) || [];
+let pagos = JSON.parse(localStorage.getItem('lista_pagos')) || [];
+let idSeleccionado = null;
+let facturaSeleccionadaId = null;
+let mesSeleccionadoCobro = "";
+let cohabitantePagoId = null;
+const grid = document.getElementById('grid-cohabitantes');
+const gridFacturas = document.getElementById('grid-facturas');
+const modalFactura = document.getElementById('modal-factura');
+const formFactura = document.getElementById('form-factura');
+const formCohabitante = document.getElementById('form-cohabitante');
+
+// --- NAVEGACIÓN ---
+function mostrarSeccion(nombre) {
+    const secciones = ['seccion-inicio','seccion-lista','seccion-registro-facturas','seccion-pagos'];
+    secciones.forEach(id => {
+        const s = document.getElementById(id);
+        if(s) s.style.display = 'none';
+    });
+    if (nombre === 'lista') { document.getElementById('seccion-lista').style.display = 'block'; renderizarTarjetas(); }
+    else if (nombre === 'inicio') { document.getElementById('seccion-inicio').style.display = 'block'; }
+    else if (nombre === 'registro-facturas') { document.getElementById('seccion-registro-facturas').style.display = 'block'; renderizarFacturas(); }
+    else if (nombre === 'pagos') { document.getElementById('seccion-pagos').style.display = 'block'; }
+}
+
+// --- SEGURIDAD ---
+function solicitarPassword(callback) {
+    const modalPass = document.getElementById('modal-password');
+    const inputPass = document.getElementById('input-pass');
+    modalPass.style.display = 'block';
+    inputPass.value = '';
+    inputPass.focus();
+    document.getElementById('btn-confirmar-pass').onclick = () => {
+        if (inputPass.value === CLAVE_CORRECTA) { modalPass.style.display = 'none'; callback(); }
+        else { alert("Clave incorrecta"); }
+    };
+    document.getElementById('btn-cancelar-pass').onclick = () => modalPass.style.display = 'none';
+    inputPass.onkeydown = (e) => { if(e.key === 'Enter') document.getElementById('btn-confirmar-pass').click(); };
+}
+
+// --- CAPITALIZAR ---
+function capitalizarTexto(texto) {
+    if (!texto || typeof texto !== 'string') return "";
+    let limpio = texto.trim();
+    if (limpio.length === 0) return "";
+    return limpio.charAt(0).toUpperCase() + limpio.slice(1).toLowerCase();
+}
+
+// --- FORMATEO ---
+document.getElementById('telefono').addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 4) v = v.substring(0, 4) + '-' + v.substring(4, 8);
+    e.target.value = v;
+});
+document.getElementById('dui').addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 8) v = v.substring(0, 8) + '-' + v.substring(8, 9);
+    e.target.value = v;
+});
+
+// --- GESTIÓN DE COHABITANTES ---
+function renderizarTarjetas() {
+    grid.innerHTML = '';
+    cohabitantes.forEach(c => {
+        grid.innerHTML += `
+            <div class="card">
+                <h4>${c.n1} ${c.n2} ${c.a1} ${c.a2}</h4>
+                <p><strong>Tel:</strong> ${c.tel} | <strong>DUI:</strong> ${c.dui}</p>
+                <button class="btn-modificar-card" onclick="prepararEdicionCohabitante(${c.id})">Modificar / Eliminar</button>
+            </div>`;
+    });
+}
+
+formCohabitante.onsubmit = (e) => {
+    e.preventDefault();
+    if(idSeleccionado) return;
+    cohabitantes.push({
+        id: Date.now(),
+        n1: capitalizarTexto(document.getElementById('nombre1').value),
+        n2: capitalizarTexto(document.getElementById('nombre2').value),
+        a1: capitalizarTexto(document.getElementById('apellido1').value),
+        a2: capitalizarTexto(document.getElementById('apellido2').value),
+        tel: document.getElementById('telefono').value,
+        dui: document.getElementById('dui').value,
+        alquiler: parseFloat(document.getElementById('alquiler').value) || 0,
+        servicios: {
+            internet: document.getElementById('chk-internet').checked,
+            lavadora: document.getElementById('chk-lavadora').checked,
+            refrigeradora: document.getElementById('chk-refrigeradora').checked,
+            cocina: document.getElementById('chk-cocina').checked
+        }
+    });
+    localStorage.setItem('lista_cohabitantes', JSON.stringify(cohabitantes));
+    document.getElementById('modal-formulario').style.display = 'none';
+    formCohabitante.reset();
+    renderizarTarjetas();
+};
+
+document.getElementById('btn-confirmar-cambios').onclick = () => {
+    const idx = cohabitantes.findIndex(c => c.id === idSeleccionado);
+    const numPersEdit = document.getElementById('num-personas').value || 1;
+    cohabitantes[idx] = {
+        id: idSeleccionado,
+        n1: capitalizarTexto(document.getElementById('nombre1').value),
+        n2: capitalizarTexto(document.getElementById('nombre2').value),
+        a1: capitalizarTexto(document.getElementById('apellido1').value),
+        a2: capitalizarTexto(document.getElementById('apellido2').value),
+        tel: document.getElementById('telefono').value,
+        dui: document.getElementById('dui').value,
+        ocupantes: parseInt(numPersEdit),
+        alquiler: parseFloat(document.getElementById('alquiler').value) || 0,
+        servicios: {
+            internet: document.getElementById('chk-internet').checked,
+            lavadora: document.getElementById('chk-lavadora').checked,
+            refrigeradora: document.getElementById('chk-refrigeradora').checked,
+            cocina: document.getElementById('chk-cocina').checked
+        }
+    };
+    localStorage.setItem('lista_cohabitantes', JSON.stringify(cohabitantes));
+    document.getElementById('modal-formulario').style.display = 'none';
+    renderizarTarjetas();
+};
+
+// --- GESTIÓN DE FACTURAS ---
+function renderizarFacturas() {
+    gridFacturas.innerHTML = '';
+    facturas.forEach(f => {
+        const color = f.tipo === 'Recibo de Agua' ? '#3498db' : '#f1c40f';
+        gridFacturas.innerHTML += `
+            <div class="card" style="border-left-color: ${color}">
+                <h4>${f.tipo}</h4>
+                <p><strong>Mes:</strong> ${f.mes} | <strong>Monto:</strong> $${parseFloat(f.monto).toFixed(2)}</p>
+                <button class="btn-modificar-card" onclick="prepararEdicionFactura(${f.id})">Modificar / Eliminar</button>
+            </div>`;
+    });
+}
+
+formFactura.onsubmit = (e) => {
+    e.preventDefault();
+    if(facturaSeleccionadaId) return;
+    facturas.push({
+        id: Date.now(),
+        tipo: document.getElementById('tipo-servicio').value,
+        mes: document.getElementById('mes-factura').value,
+        monto: document.getElementById('monto-factura').value
+    });
+    localStorage.setItem('lista_facturas', JSON.stringify(facturas));
+    cerrarModalFactura();
+    renderizarFacturas();
+};
+
+function abrirModalFactura() {
+    facturaSeleccionadaId = null;
+    document.getElementById('titulo-modal-factura').innerText = "Registrar Recibo";
+    document.getElementById('btns-factura-nuevo').style.display = 'flex';
+    document.getElementById('btns-factura-edicion').style.display = 'none';
+    modalFactura.style.display = 'block';
+}
+function cerrarModalFactura() { modalFactura.style.display = 'none'; formFactura.reset(); }
+
+function prepararEdicionFactura(id) {
+    solicitarPassword(() => {
+        facturaSeleccionadaId = id;
+        const f = facturas.find(item => item.id === id);
+        if (f) {
+            document.getElementById('tipo-servicio').value = f.tipo;
+            document.getElementById('mes-factura').value = f.mes;
+            document.getElementById('monto-factura').value = f.monto;
+            document.getElementById('btns-factura-nuevo').style.display = 'none';
+            document.getElementById('btns-factura-edicion').style.display = 'flex';
+            document.getElementById('modal-factura').style.display = 'block';
+        }
+    });
+}
+
+document.getElementById('btn-update-factura').onclick = () => {
+    const idx = facturas.findIndex(f => f.id === facturaSeleccionadaId);
+    if (idx !== -1) {
+        facturas[idx] = {
+            id: facturaSeleccionadaId,
+            tipo: document.getElementById('tipo-servicio').value,
+            mes: document.getElementById('mes-factura').value,
+            monto: document.getElementById('monto-factura').value
+        };
+        localStorage.setItem('lista_facturas', JSON.stringify(facturas));
+        renderizarFacturas();
+        cerrarModalFactura();
+    }
+};
+
+document.getElementById('btn-delete-factura').onclick = () => {
+    if(confirm("¿Eliminar factura?")) {
+        facturas = facturas.filter(f => f.id !== facturaSeleccionadaId);
+        localStorage.setItem('lista_facturas', JSON.stringify(facturas));
+        renderizarFacturas();
+        cerrarModalFactura();
+    }
+};
+
+// --- MANDAMIENTO ---
+function abrirModalReporte() {
+    const select = document.getElementById('select-cohabitante-reporte');
+    select.innerHTML = '<option value="">-- Seleccionar --</option>';
+    cohabitantes.forEach(c => {
+        select.innerHTML += `<option value="${c.id}">${c.n1} ${c.a1}</option>`;
+    });
+    document.getElementById('modal-reporte').style.display = 'block';
+}
+function cerrarModalReporte() { document.getElementById('modal-reporte').style.display = 'none'; }
+
+function generarMandamiento() {
+    const cohId = document.getElementById('select-cohabitante-reporte').value;
+    const mesBusqueda = document.getElementById('mes-reporte').value;
+    const inputFecha = document.getElementById('fecha-mandamiento-manual');
+    const fechaManual = inputFecha ? inputFecha.value : "";
+    if(!cohId) return alert("Por favor, selecciona a un cohabitante");
+    const coh = cohabitantes.find(c => c.id == cohId);
+    let fechaFinal = fechaManual ? new Date(fechaManual + 'T00:00:00') : new Date();
+    const diaDelPago = fechaFinal.getDate();
+    const numTotalPersonasCasa = cohabitantes.reduce((sum, c) => sum + (parseInt(c.ocupantes) || 1), 0);
+    const ocupantesEsteCuarto = parseInt(coh.ocupantes) || 1;
+    const facturaAgua = facturas.find(f => f.tipo === 'Recibo de Agua' && f.mes === mesBusqueda);
+    const facturaLuz = facturas.find(f => f.tipo === 'Recibo de Luz' && f.mes === mesBusqueda);
+    const montoTotalAgua = facturaAgua ? parseFloat(facturaAgua.monto).toFixed(2) : "0.00";
+    const montoTotalLuz = facturaLuz ? parseFloat(facturaLuz.monto).toFixed(2) : "0.00";
+    const cuotaAgua = facturaAgua ? (parseFloat(facturaAgua.monto) / numTotalPersonasCasa) * ocupantesEsteCuarto : 0;
+    const cuotaLuz = facturaLuz ? (parseFloat(facturaLuz.monto) / numTotalPersonasCasa) * ocupantesEsteCuarto : 0;
+    const totalPagadoresInternet = cohabitantes.filter(c => c.servicios && c.servicios.internet).length;
+    const cuotaCalculadaInternet = totalPagadoresInternet > 0 ? (25 / totalPagadoresInternet) : 0;
+    let cuotaInternet = (coh.servicios && coh.servicios.internet) ? cuotaCalculadaInternet : 0;
+    const cuotaLavadora = (coh.servicios && coh.servicios.lavadora) ? 5.00 : 0;
+    const cuotaRefri = (coh.servicios && coh.servicios.refrigeradora) ? 2.00 : 0;
+    const cuotaCocina = (coh.servicios && coh.servicios.cocina) ? 1.50 : 0;
+    const montoOtros = parseFloat(document.getElementById('gasto-manual').value) || 0;
+    const notaOtros = document.getElementById('nota-manual').value || "Otros gastos";
+    let montoMora = (diaDelPago >= 8) ? 7.50 : 0;
+    const montoAlquiler = parseFloat(coh.alquiler) || 75;
+    const totalFinal = montoAlquiler + cuotaAgua + cuotaLuz + cuotaInternet + cuotaLavadora + cuotaRefri + cuotaCocina + montoOtros + montoMora;
+    const objetoPago = {
+        id: Date.now(), cohabitanteId: coh.id, mes: mesBusqueda,
+        fecha: fechaFinal.toISOString().split('T')[0], monto: totalFinal.toFixed(2)
+    };
+    const indicePago = pagos.findIndex(p => p.cohabitanteId === coh.id && p.mes === mesBusqueda);
+    if (indicePago !== -1) { pagos[indicePago] = objetoPago; } else { pagos.push(objetoPago); }
+    localStorage.setItem('lista_pagos', JSON.stringify(pagos));
+    const contenidoHTML = `
+        <div class="ticket">
+            <div class="header">
+                <h3>URBANIZACIÓN LA CORUÑA II</h3>
+                <p>MANDAMIENTO DE PAGO - ${mesBusqueda.toUpperCase()} 2026</p>
+            </div>
+            <p><strong>Representante:</strong> ${coh.n1} ${coh.a1}</p>
+            <p><strong>Ocupantes en cuarto:</strong> ${ocupantesEsteCuarto} persona(s)</p>
+            <p><strong>DUI:</strong> ${coh.dui} | <strong>Fecha:</strong> ${fechaFinal.toLocaleDateString()}</p>
+            <table>
+                <tr><td>Alquiler Habitual</td><td>$${montoAlquiler.toFixed(2)}</td></tr>
+                <tr><td>Luz (Total $${montoTotalLuz})</td><td>$${cuotaLuz.toFixed(2)}</td></tr>
+                <tr><td>Agua (Total $${montoTotalAgua})</td><td>$${cuotaAgua.toFixed(2)}</td></tr>
+                ${cuotaInternet > 0 ? `<tr><td>Internet (Servicio Compartido)</td><td>$${cuotaInternet.toFixed(2)}</td></tr>` : ''}
+                ${cuotaLavadora > 0 ? `<tr><td>Uso de Lavadora</td><td>$5.00</td></tr>` : ''}
+                ${cuotaRefri > 0 ? `<tr><td>Uso de Refrigeradora</td><td>$2.00</td></tr>` : ''}
+                ${cuotaCocina > 0 ? `<tr><td>Uso de Cocina y Gas</td><td>$1.52</td></tr>` : ''}
+                ${montoMora > 0 ? `<tr><td>Mora Pago Tardío (Día ${diaDelPago})</td><td>$${montoMora.toFixed(2)}</td></tr>` : ""}
+                ${montoOtros > 0 ? `<tr><td>${notaOtros}</td><td>$${montoOtros.toFixed(2)}</td></tr>` : ''}
+                <tr class="total"><td>TOTAL A PAGAR</td><td>$${totalFinal.toFixed(2)}</td></tr>
+            </table>
+            <p style="font-size: 0.8em; text-align: center; margin-top: 10px;">
+                Cálculo basado en ${numTotalPersonasCasa} habitantes totales en la propiedad.
+            </p>
+            <div class="firma-espacio"><p>__________________________</p><p>F. Administrador</p></div>
+        </div>`;
+    const ventana = window.open('', '_blank');
+    ventana.document.write(`<html><head><style>
+        @page { size: landscape; margin: 10mm; }
+        body { font-family: Arial, sans-serif; display: flex; justify-content: space-around; padding: 20px; }
+        .ticket { width: 45%; border: 1px dashed #000; padding: 20px; box-sizing: border-box; }
+        .header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 10px; }
+        table { width: 100%; margin-top: 10px; border-collapse: collapse; }
+        td { padding: 5px 0; border-bottom: 1px solid #eee; }
+        .total { font-weight: bold; font-size: 1.2em; border-top: 2px solid #000; padding-top: 10px; }
+        .firma-espacio { margin-top: 60px; text-align: center; }
+    </style></head><body>${contenidoHTML} ${contenidoHTML}</body></html>`);
+    ventana.document.close();
+    setTimeout(() => {
+        ventana.print();
+        document.getElementById('modal-reporte').style.display = 'none';
+        mostrarSeccion('pagos');
+    }, 500);
+}
+
+// --- CONTROL DE PAGOS ---
+function administrarPagos() {
+    mostrarSeccion('pagos');
+    const contenedorMeses = document.getElementById('lista-meses-pago');
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    contenedorMeses.innerHTML = '';
+    meses.forEach(m => {
+        contenedorMeses.innerHTML += `<button onclick="verPagosMes('${m}')" id="btn-mes-${m}" class="btn-mes-lateral">${m}</button>`;
+    });
+}
+
+function verPagosMes(mes) {
+    mesSeleccionadoCobro = mes;
+    document.getElementById('titulo-mes-seleccionado').innerText = `Estado de Pagos: ${mes} 2026`;
+    const contenedor = document.getElementById('contenedor-estado-pagos');
+    contenedor.innerHTML = '';
+    cohabitantes.forEach(c => {
+        const pagoRealizado = pagos.find(p => p.cohabitanteId === c.id && p.mes === mes);
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.style.borderLeft = pagoRealizado ? '5px solid #27ae60' : '5px solid #e74c3c';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.style.marginBottom = '10px';
+        if (pagoRealizado) {
+            div.innerHTML = `
+                <div>
+                    <span style="color:#27ae60; font-weight:bold;">✔ AL DÍA</span><br>
+                    <strong>${c.n1} ${c.a1}</strong><br>
+                    <small>Fecha cobro: ${pagoRealizado.fecha}</small>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-weight:bold; font-size:16px;">$${pagoRealizado.monto}</div>
+                    <button onclick="eliminarPago(${pagoRealizado.id})" style="background:none; border:none; color:#e74c3c; cursor:pointer; text-decoration:underline; font-size:12px;">Eliminar Pago</button>
+                </div>`;
+        } else {
+            div.innerHTML = `
+                <div>
+                    <span style="color:#e74c3c; font-weight:bold;">✘ PENDIENTE</span><br>
+                    <strong>${c.n1} ${c.a1}</strong>
+                </div>
+                <button class="btn-guardar" onclick="abrirModalRegistrarPago(${c.id})" style="flex:none; padding:10px 15px !important; font-size:14px !important;">Registrar Pago</button>`;
+        }
+        contenedor.appendChild(div);
+    });
+}
+
+function eliminarPago(pagoId) {
+    solicitarPassword(() => {
+        if(confirm("¿Estás seguro de eliminar este registro de pago?")) {
+            pagos = pagos.filter(p => p.id !== pagoId);
+            localStorage.setItem('lista_pagos', JSON.stringify(pagos));
+            verPagosMes(mesSeleccionadoCobro);
+        }
+    });
+}
+
+function abrirModalRegistrarPago(id) {
+    cohabitantePagoId = id;
+    const c = cohabitantes.find(coh => coh.id === id);
+    document.getElementById('info-pago-cohabitante').innerText = `Registrando pago para: ${c.n1} ${c.a1}`;
+    document.getElementById('fecha-pago-real').value = new Date().toISOString().split('T')[0];
+    document.getElementById('modal-registrar-pago').style.display = 'block';
+}
+
+function guardarPagoFinal() {
+    const fecha = document.getElementById('fecha-pago-real').value;
+    const monto = parseFloat(document.getElementById('monto-pago-recibido').value) || 0;
+    const diaPago = new Date(fecha).getUTCDate();
+    let montoFinal = monto;
+    if (diaPago > 7) {
+        if (confirm("El pago es después del día 7. ¿Aplicar $5.00 de mora?")) { montoFinal += 5.00; }
+    }
+    pagos.push({ cohabitanteId: cohabitantePagoId, mes: mesSeleccionadoCobro, fecha: fecha, monto: montoFinal.toFixed(2) });
+    localStorage.setItem('lista_pagos', JSON.stringify(pagos));
+    cerrarModalPago();
+    verPagosMes(mesSeleccionadoCobro);
+}
+function cerrarModalPago() { document.getElementById('modal-registrar-pago').style.display = 'none'; }
+
+// --- TECLA ENTER ---
+function configurarEnter(idFormulario) {
+    const inputs = Array.from(document.querySelectorAll(`#${idFormulario} input, #${idFormulario} select`));
+    inputs.forEach((input, index) => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const next = inputs[index + 1];
+                if (next) next.focus();
+                else {
+                    if (idFormulario === 'form-cohabitante' && idSeleccionado) document.getElementById('btn-confirmar-cambios').click();
+                    else if (idFormulario === 'form-factura' && facturaSeleccionadaId) document.getElementById('btn-update-factura').click();
+                    else document.getElementById(idFormulario).requestSubmit();
+                }
+            }
+        });
+    });
+}
+configurarEnter('form-cohabitante');
+configurarEnter('form-factura');
+
+// --- EVENTOS INICIALES ---
+document.getElementById('btn-abrir-modal').onclick = () => {
+    idSeleccionado = null;
+    formCohabitante.reset();
+    document.getElementById('contenedor-botones-nuevo').style.display = 'flex';
+    document.getElementById('contenedor-botones-edicion').style.display = 'none';
+    document.getElementById('modal-formulario').style.display = 'block';
+};
+document.getElementById('btn-cerrar-modal').onclick = () => {
+    idSeleccionado = null;
+    document.getElementById('modal-formulario').style.display = 'none';
+};
+document.getElementById('btn-regresar-opciones').onclick = () => {
+    idSeleccionado = null;
+    document.getElementById('modal-formulario').style.display = 'none';
+};
+document.getElementById('btn-eliminar-cohabitante').onclick = () => {
+    if (confirm("¿Estás seguro de eliminar a este cohabitante? Esta acción no se puede deshacer.")) {
+        cohabitantes = cohabitantes.filter(c => c.id !== idSeleccionado);
+        localStorage.setItem('lista_cohabitantes', JSON.stringify(cohabitantes));
+        document.getElementById('modal-formulario').style.display = 'none';
+        renderizarTarjetas();
+        alert("Registro eliminado con éxito.");
+    }
+};
+
+function prepararEdicionCohabitante(id) {
+    solicitarPassword(() => {
+        idSeleccionado = id;
+        const c = cohabitantes.find(item => item.id === id);
+        document.getElementById('nombre1').value = c.n1;
+        document.getElementById('nombre2').value = c.n2 || '';
+        document.getElementById('apellido1').value = c.a1;
+        document.getElementById('apellido2').value = c.a2 || '';
+        document.getElementById('telefono').value = c.tel;
+        document.getElementById('dui').value = c.dui;
+        document.getElementById('num-personas').value = c.ocupantes || 1;
+        document.getElementById('alquiler').value = c.alquiler || 0;
+        if(c.servicios) {
+            document.getElementById('chk-internet').checked = c.servicios.internet;
+            document.getElementById('chk-lavadora').checked = c.servicios.lavadora;
+            document.getElementById('chk-refrigeradora').checked = c.servicios.refrigeradora;
+            document.getElementById('chk-cocina').checked = c.servicios.cocina;
+        }
+        document.getElementById('contenedor-botones-nuevo').style.display = 'none';
+        document.getElementById('contenedor-botones-edicion').style.display = 'flex';
+        document.getElementById('modal-formulario').style.display = 'block';
+    });
+}
+    </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión La Coruña II</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gestión de Cohabitantes</h1>
+            <p>Urbanización La Coruña II - Soyapango</p>
+        </header>
+        <nav class="main-nav">
+            <button class="nav-btn" onclick="mostrarSeccion('inicio')">Inicio</button>
+            <button class="nav-btn" onclick="mostrarSeccion('lista')">Lista de Cohabitantes</button>
+        </nav>
+       <section id="seccion-inicio">
+    <div style="text-align: center; padding: 40px;">
+        <h3 style="color: #2c3e50; font-size: 42px;">Panel de Control</h3>
+        <div class="menu-servicios">
+            <button class="btn-servicio" onclick="abrirModalFactura()">
+                <span style="font-size: 30px;">📄</span><br>Agregar Facturas
+            </button>
+            <button class="btn-servicio" onclick="mostrarSeccion('registro-facturas')">
+                <span style="font-size: 30px;">📊</span><br>Registro de facturas
+            </button>
+            <button class="btn-servicio" onclick="abrirModalReporte()">
+                <span style="font-size: 30px;">📧</span><br>Generar Mandamiento
+            </button>
+            <button class="btn-servicio" onclick="administrarPagos()">
+                <span style="font-size: 30px;">💰</span><br>Historial de pagos
+            </button>
+        </div>
+    </div>
+</section>
+        <section id="seccion-lista" style="display:none;">
+            <div class="section-header">
+                <h2>Directorio Actual</h2>
+                <button id="btn-abrir-modal" class="btn-add">+ Agregar Nuevo</button>
+            </div>
+            <div id="grid-cohabitantes" class="grid-container"></div>
+        </section>
+        <section id="seccion-registro-facturas" style="display:none;">
+            <div class="section-header">
+                <h2>Historial de Recibos</h2>
+                <button class="nav-btn" onclick="mostrarSeccion('inicio')">Volver al Inicio</button>
+            </div>
+            <div id="grid-facturas" class="grid-container"></div>
+        </section>
+        <section id="seccion-pagos" style="display:none;">
+    <div class="section-header">
+        <h2>Control de Pagos y Moras</h2>
+        <button class="nav-btn" onclick="mostrarSeccion('inicio')">Volver al Inicio</button>
+    </div>
+    <div style="display: flex; gap: 20px; margin-top: 20px;">
+        <div style="width: 200px; background: #f4f4f4; padding: 15px; border-radius: 10px;">
+            <h4>Seleccionar Mes</h4>
+            <div id="lista-meses-pago" class="meses-columna"></div>
+        </div>
+        <div style="flex: 1;">
+            <h3 id="titulo-mes-seleccionado">Mes: ---</h3>
+            <div id="contenedor-estado-pagos"></div>
+        </div>
+    </div>
+</section>
+<div id="modal-registrar-pago" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3>Registrar Pago</h3>
+        <p id="info-pago-cohabitante"></p>
+        <div class="form-grid">
+            <label>Fecha de Recibido:</label>
+            <input type="date" id="fecha-pago-real">
+            <label>Monto Recibido ($):</label>
+            <input type="number" id="monto-pago-recibido" step="0.01">
+        </div>
+        <div class="modal-actions">
+            <button onclick="cerrarModalPago()" class="btn-cancelar">Cancelar</button>
+            <button onclick="guardarPagoFinal()" class="btn-guardar">Confirmar Pago</button>
+        </div>
+    </div>
+</div>
+    </div>
+    <div id="modal-password" class="modal">
+        <div class="modal-content" style="max-width: 320px;">
+            <h3>Seguridad</h3>
+            <p>Ingresa la clave:</p>
+            <input type="password" id="input-pass" placeholder="Contraseña" style="width: 100%; box-sizing: border-box; margin-bottom: 15px;">
+            <div class="modal-actions">
+                <button id="btn-cancelar-pass" class="btn-cancelar">Cancelar</button>
+                <button id="btn-confirmar-pass" class="btn-guardar">Entrar</button>
+            </div>
+        </div>
+    </div>
+    <div id="modal-formulario" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-titulo">Registro de Cohabitante</h3>
+            <form id="form-cohabitante">
+                <div class="form-grid">
+                    <input type="text" id="nombre1" placeholder="Primer Nombre *" required>
+                    <input type="text" id="nombre2" placeholder="Segundo Nombre">
+                    <input type="text" id="apellido1" placeholder="Primer Apellido *" required>
+                    <input type="text" id="apellido2" placeholder="Segundo Apellido">
+                    <input type="number" id="num-personas" placeholder="N° de Personas" min="1" value="1" required>
+                    <input type="text" id="telefono" placeholder="Teléfono (####-####) *" maxlength="9" required>
+                    <input type="text" id="dui" placeholder="DUI (########-#) *" maxlength="10" required>
+                    <input type="number" id="alquiler" placeholder="Monto de alquiler ($)*" step="0.01" min="0" required>
+                </div>
+                <div class="servicios-checklist">
+                    <h4>Servicios Opcionales</h4>
+                    <label><input type="checkbox" id="chk-internet"> Internet</label>
+                    <label><input type="checkbox" id="chk-lavadora"> Lavadora ($5.00)</label>
+                    <label><input type="checkbox" id="chk-refrigeradora"> Refrigeradora ($2.00)</label>
+                    <label><input type="checkbox" id="chk-cocina"> Cocina y Gas ($1.52)</label>
+                </div>
+                <div id="contenedor-botones-nuevo" class="modal-actions">
+                    <button type="button" id="btn-cerrar-modal" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn-guardar">Guardar Registro</button>
+                </div>
+                <div id="contenedor-botones-edicion" class="modal-actions" style="display:none; flex-direction:column; gap:10px;">
+                  <button id="btn-confirmar-cambios" class="btn-guardar">Confirmar Cambios</button>
+                  <button id="btn-eliminar-cohabitante" class="btn-cancelar" style="background: var(--danger); margin-top: 10px; width: 100%;">Eliminar Permanentemente</button>
+                  <div id="btn-regresar-opciones" style="text-align:center; margin-top:20px; cursor:pointer; color: #7f8c8d;">Volver</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="modal-factura" class="modal">
+        <div class="modal-content">
+            <h3 id="titulo-modal-factura">Registrar Recibo</h3>
+            <form id="form-factura">
+                <div class="form-grid">
+                    <label>Tipo de Servicio:</label>
+                    <select id="tipo-servicio" required>
+                        <option value="Recibo de Agua">Recibo de Agua</option>
+                        <option value="Recibo de Luz">Recibo de Luz</option>
+                    </select>
+                    <label>Mes correspondiente:</label>
+                    <select id="mes-factura" required>
+                        <option value="Enero">Enero</option>
+                        <option value="Febrero">Febrero</option>
+                        <option value="Marzo">Marzo</option>
+                        <option value="Abril">Abril</option>
+                        <option value="Mayo">Mayo</option>
+                        <option value="Junio">Junio</option>
+                        <option value="Julio">Julio</option>
+                        <option value="Agosto">Agosto</option>
+                        <option value="Septiembre">Septiembre</option>
+                        <option value="Octubre">Octubre</option>
+                        <option value="Noviembre">Noviembre</option>
+                        <option value="Diciembre">Diciembre</option>
+                    </select>
+                    <label>Monto ($):</label>
+                    <input type="number" id="monto-factura" step="0.01" placeholder="0.00" required>
+                </div>
+                <div id="btns-factura-nuevo" class="modal-actions">
+                    <button type="button" onclick="cerrarModalFactura()" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn-guardar">Guardar Factura</button>
+                </div>
+                <div id="btns-factura-edicion" class="modal-actions" style="display:none; flex-direction:column; gap:10px;">
+                    <button type="button" id="btn-update-factura" class="btn-guardar">Confirmar Cambios</button>
+                    <button type="button" id="btn-delete-factura" class="btn-cancelar" style="background:var(--danger)">Eliminar Permanentemente</button>
+                    <button type="button" onclick="cerrarModalFactura()" style="border:none; background:none; cursor:pointer; color:gray; padding:10px;">Volver</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="modal-reporte" class="modal">
+    <div class="modal-content">
+        <h3>Generar Mandamiento de Pago</h3>
+        <label>Seleccionar Cohabitante:</label>
+        <select id="select-cohabitante-reporte" class="input-form"></select>
+        <label>Mes a Cobrar:</label>
+        <select id="mes-reporte" class="input-form">
+            <option value="Enero">Enero</option>
+            <option value="Febrero">Febrero</option>
+            <option value="Marzo">Marzo</option>
+            <option value="Abril">Abril</option>
+            <option value="Mayo">Mayo</option>
+            <option value="Junio">Junio</option>
+            <option value="Julio">Julio</option>
+            <option value="Agosto">Agosto</option>
+            <option value="Septiembre">Septiembre</option>
+            <option value="Octubre">Octubre</option>
+            <option value="Noviembre">Noviembre</option>
+            <option value="Diciembre">Diciembre</option>           
+            </select>
+        <label>Fecha de Pago Real (Para la Mora):</label>
+        <input type="date" id="fecha-mandamiento-manual" class="input-form">
+        <label>Otros Gastos (Opcional):</label>
+        <input type="number" id="gasto-manual" class="input-form" placeholder="0.00">
+        <label>Nota de Otros Gastos:</label>
+        <input type="text" id="nota-manual" class="input-form" placeholder="Ej: Reparación de chapa">
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn-guardar" onclick="generarMandamiento()">Imprimir y Registrar</button>
+            <button class="btn-cancelar" onclick="cerrarModalReporte()">Cancelar</button>
+        </div>
+    </div>
+    </div> 
+    <script src="script.js"></script>
+</body>
+</html>
