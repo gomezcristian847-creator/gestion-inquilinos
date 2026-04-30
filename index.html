@@ -710,6 +710,24 @@ const firebaseConfig = {
         </div>
     </div>
 </div>
+<div id="modal-soporte" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3>🛠️ Soporte Técnico</h3>
+        <p style="color:var(--text-light);font-size:0.9rem;text-align:center;margin-bottom:16px;">¿Tienes problemas? Contáctanos.</p>
+        <div class="campo-grupo">
+            <label>Tu correo actual</label>
+            <input type="email" id="soporte-email" placeholder="tu@correo.com" readonly style="background:#f8fafc;">
+        </div>
+        <div class="campo-grupo">
+            <label>Describe tu problema</label>
+            <textarea id="soporte-mensaje" rows="4" placeholder="Ej: No puedo iniciar sesión, olvidé mi contraseña..." style="width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.95rem;resize:vertical;"></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancelar" onclick="cerrarModal('modal-soporte')">Cerrar</button>
+            <button class="btn-guardar" onclick="enviarSoporte()">Enviar mensaje</button>
+        </div>
+    </div>
+</div>
 
 <div id="contenido-app" style="padding: 10px;">
     <div class="container">
@@ -722,12 +740,14 @@ const firebaseConfig = {
             <div class="header-acciones">
                 <button class="btn-header" onclick="abrirCambiarPin()" id="btn-cambiar-pin" style="display:none;">🔒 PIN</button>
                 <button class="btn-header peligro" onclick="cerrarSesion()">Salir</button>
+                <button class="btn-header" onclick="mostrarModalSoporte()" style="background:rgba(243,156,18,0.3);border-color:rgba(243,156,18,0.5);">🛠️ Soporte</button>
             </div>
         </header>
 
         <nav class="main-nav">
             <button class="nav-btn activo" onclick="mostrarSeccion('inicio')" id="nav-inicio">🏠 Inicio</button>
             <button class="nav-btn" onclick="mostrarSeccion('lista')" id="nav-lista">👥 Cohabitantes</button>
+            <button class="nav-btn" onclick="mostrarSeccion('mi-cuenta')" id="nav-mi-cuenta">⚙️ Mi Cuenta</button>
         </nav>
 
         <div class="seccion-content">
@@ -785,6 +805,46 @@ const firebaseConfig = {
                     </div>
                 </div>
             </section>
+            <!-- SECCIÓN MI CUENTA -->
+<section id="seccion-mi-cuenta" style="display:none;">
+    <div class="section-header">
+        <h2>Configuración de Mi Cuenta</h2>
+        <button class="nav-btn" onclick="mostrarSeccion('inicio')">← Volver</button>
+    </div>
+    
+    <div style="max-width:500px;margin:0 auto;">
+        <div class="card" style="margin-bottom:20px;">
+            <h4 style="margin-bottom:16px;color:var(--primary);">📧 Cambiar Correo Electrónico</h4>
+            <div id="err-cambiar-email" class="msg-error"></div>
+            <div class="campo-grupo">
+                <label>Correo actual</label>
+                <input type="email" id="email-actual-display" readonly style="background:#f8fafc;">
+            </div>
+            <div class="campo-grupo">
+                <label>Nuevo correo electrónico</label>
+                <input type="email" id="nuevo-email" placeholder="nuevo@correo.com">
+            </div>
+            <div class="campo-grupo">
+                <label>Confirmar nuevo correo</label>
+                <input type="email" id="confirmar-nuevo-email" placeholder="Repite el nuevo correo">
+            </div>
+            <div class="campo-grupo">
+                <label>Contraseña actual (para verificar)</label>
+                <div class="input-icon-wrap">
+                    <input type="password" id="pass-verificar-email" placeholder="Tu contraseña de ingreso">
+                    <button type="button" class="toggle-pass" onclick="toggleVer('pass-verificar-email', this)">👁️</button>
+                </div>
+            </div>
+            <button class="btn-primario" onclick="actualizarCorreo()" style="margin-top:8px;">Actualizar Correo</button>
+        </div>
+
+        <div class="card">
+            <h4 style="margin-bottom:16px;color:var(--primary);">🔒 Cambiar Contraseña de Ingreso</h4>
+            <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:12px;">Te enviaremos un enlace a tu correo para restablecerla de forma segura.</p>
+            <button class="btn-primario" onclick="mostrarRecuperarPass();cerrarSesion();">Solicitar cambio de contraseña</button>
+        </div>
+    </div>
+</section>
         </div>
     </div>
 </div>
@@ -1221,13 +1281,84 @@ async function guardarNuevoPin() {
         ocultarLoader();
     }
 }
+// ==============================================
+// SOPORTE TÉCNICO
+// ==============================================
+function mostrarModalSoporte() {
+    const user = auth.currentUser;
+    document.getElementById('soporte-email').value = user ? user.email : 'Invitado';
+    document.getElementById('soporte-mensaje').value = '';
+    abrirModal('modal-soporte');
+}
 
+async function enviarSoporte() {
+    const email = document.getElementById('soporte-email').value;
+    const mensaje = document.getElementById('soporte-mensaje').value.trim();
+    if (!mensaje) return alert('Por favor describe tu problema.');
+    
+    mostrarLoader();
+    try {
+        // Guardar en Firestore colección "soporte"
+        await db.collection('soporte').add({
+            email: email,
+            mensaje: mensaje,
+            uid: usuarioUID || 'invitado',
+            fecha: firebase.firestore.FieldValue.serverTimestamp(),
+            estado: 'pendiente'
+        });
+        cerrarModal('modal-soporte');
+        alert('Mensaje enviado. Te contactaremos pronto.');
+    } catch (e) {
+        alert('Error al enviar. Intenta de nuevo.');
+    } finally {
+        ocultarLoader();
+    }
+}
+
+// ==============================================
+// ACTUALIZAR CORREO ELECTRÓNICO
+// ==============================================
+async function actualizarCorreo() {
+    const nuevoEmail = document.getElementById('nuevo-email').value.trim();
+    const confirmarEmail = document.getElementById('confirmar-nuevo-email').value.trim();
+    const pass = document.getElementById('pass-verificar-email').value;
+    
+    if (!nuevoEmail || !confirmarEmail || !pass) return mostrarError('err-cambiar-email', 'Todos los campos son obligatorios.');
+    if (nuevoEmail !== confirmarEmail) return mostrarError('err-cambiar-email', 'Los correos no coinciden.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nuevoEmail)) return mostrarError('err-cambiar-email', 'El correo no es válido.');
+    
+    mostrarLoader();
+    try {
+        // Reautenticar con contraseña
+        const user = auth.currentUser;
+        const cred = firebase.auth.EmailAuthProvider.credential(user.email, pass);
+        await user.reauthenticateWithCredential(cred);
+        
+        // Actualizar email en Auth
+        await user.updateEmail(nuevoEmail);
+        
+        // Actualizar email en Firestore
+        await db.collection('usuarios').doc(usuarioUID).update({ correo: nuevoEmail });
+        
+        mostrarOk('err-cambiar-email', '¡Correo actualizado! Revisa tu nuevo correo para verificarlo.');
+        document.getElementById('email-actual-display').value = nuevoEmail;
+        document.getElementById('nuevo-email').value = '';
+        document.getElementById('confirmar-nuevo-email').value = '';
+        document.getElementById('pass-verificar-email').value = '';
+    } catch (e) {
+        if (e.code === 'auth/wrong-password') mostrarError('err-cambiar-email', 'Contraseña incorrecta.');
+        else if (e.code === 'auth/email-already-in-use') mostrarError('err-cambiar-email', 'Ese correo ya está en uso.');
+        else mostrarError('err-cambiar-email', 'Error al actualizar. Intenta de nuevo.');
+    } finally {
+        ocultarLoader();
+    }
+}
 function mostrarSeccion(nombre) {
-    ['seccion-inicio','seccion-lista','seccion-registro-facturas','seccion-pagos'].forEach(id => {
+    ['seccion-inicio','seccion-lista','seccion-registro-facturas','seccion-pagos','seccion-mi-cuenta'].forEach(id => {
         const s = document.getElementById(id);
         if (s) s.style.display = 'none';
     });
-    ['nav-inicio','nav-lista'].forEach(id => {
+    ['nav-inicio','nav-lista','nav-mi-cuenta'].forEach(id => {
         const b = document.getElementById(id);
         if (b) b.classList.remove('activo');
     });
@@ -1236,6 +1367,7 @@ function mostrarSeccion(nombre) {
     else if (nombre === 'lista')              { document.getElementById('seccion-lista').style.display = 'block'; document.getElementById('nav-lista').classList.add('activo'); renderizarTarjetas(); }
     else if (nombre === 'registro-facturas')  { document.getElementById('seccion-registro-facturas').style.display = 'block'; renderizarFacturas(); }
     else if (nombre === 'pagos')              { document.getElementById('seccion-pagos').style.display = 'block'; }
+    else if (nombre === 'mi-cuenta')          { document.getElementById('seccion-mi-cuenta').style.display = 'block'; document.getElementById('nav-mi-cuenta').classList.add('activo'); const user = auth.currentUser; if (user) document.getElementById('email-actual-display').value = user.email; }
 }
 
 function solicitarPassword(callback) {
