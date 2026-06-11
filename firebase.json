@@ -1,10 +1,21 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ]
+    ],
+    "rewrites": [
+      {
+        "source": "/administracion",
+        "destination": "/administracion.html"
+      },
+      {
+        "source": "/inquilino",
+        "destination": "/inquilino/inquilino.html"
+      }
+    ],
+    "cleanUrls": true
   }
 }

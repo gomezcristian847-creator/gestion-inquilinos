@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Portal del Inquilino</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --primary: #1a237e;
+    --primary-light: #283593;
+    --primary-vivid: #3949ab;
+    --accent: #00e676;
+    --accent-dark: #00c853;
+    --danger: #f44336;
+    --warning: #ff9800;
+    --info: #2196f3;
+    --bg: #eef2ff;
+    --card-bg: #ffffff;
+    --text: #1a237e;
+    --text-body: #37474f;
+    --text-light: #607d8b;
+    --border-color: #c5cae9;
+    --shadow: 0 4px 20px rgba(26,35,126,0.10), 0 1.5px 6px rgba(26,35,126,0.06);
+    --shadow-hover: 0 12px 36px rgba(26,35,126,0.18), 0 4px 12px rgba(26,35,126,0.10);
+    --shadow-card: 0 2px 12px rgba(26,35,126,0.10), 0 1px 4px rgba(26,35,126,0.07);
+    --radius: 16px;
+    --gradient-header: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+h1, h2, h3, h4 { font-family: 'Nunito', sans-serif; }
+
+/* ============================================================
+   LOADER
+   ============================================================ */
+.loader-overlay {
+    position: fixed; inset: 0;
+    background: rgba(30,58,95,0.7);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9999; backdrop-filter: blur(4px);
+}
+.loader-overlay.visible { display: flex; }
+.loader-spinner {
+    width: 48px; height: 48px;
+    border: 5px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   PANTALLA DE LOGIN
+   ============================================================ */
+#pantalla-login {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
+    background: linear-gradient(135deg, #1a237e 0%, #283593 40%, #3949ab 70%, #1565c0 100%);
+    position: relative; overflow: hidden;
+}
+#pantalla-login::before {
+    content: ''; position: absolute;
+    width: 600px; height: 600px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%; top: -200px; right: -200px;
+}
+#pantalla-login::after {
+    content: ''; position: absolute;
+    width: 400px; height: 400px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%; bottom: -150px; left: -100px;
+}
+.login-logo {
+    text-align: center; margin-bottom: 32px;
+    position: relative; z-index: 1;
+    animation: fadeDown 0.6s ease;
+}
+.login-logo .logo-emoji { font-size: 68px; display: block; margin-bottom: 12px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
+.login-logo h1 { color: white; font-size: 2rem; font-weight: 900; letter-spacing: -0.5px; }
+.login-logo p { color: rgba(255,255,255,0.65); font-size: 0.95rem; margin-top: 4px; }
+.login-panel {
+    background: white; border-radius: 24px; padding: 36px 32px;
+    width: 100%; max-width: 420px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+    position: relative; z-index: 1;
+    animation: fadeUp 0.5s ease;
+}
+.login-panel h2 { font-size: 1.5rem; color: var(--primary); margin-bottom: 6px; text-align: center; font-weight: 800; }
+.login-panel p.subtitulo { color: var(--text-light); font-size: 0.85rem; text-align: center; margin-bottom: 24px; }
+.campo-grupo { margin-bottom: 14px; }
+.campo-grupo label {
+    display: block; font-size: 0.82rem; font-weight: 700;
+    color: var(--text-light); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 6px;
+}
+.campo-grupo input {
+    width: 100%; padding: 13px 16px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px; font-size: 0.95rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text); outline: none;
+    transition: border-color 0.2s; background: white;
+}
+.campo-grupo input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30,58,95,0.08);
+}
+.input-icon-wrap { position: relative; }
+.input-icon-wrap input { padding-right: 44px; }
+.toggle-pass {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    font-size: 1.1rem; padding: 4px; color: var(--text-light);
+}
+.msg-error {
+    background: #fff5f5; border: 1px solid #fed7d7;
+    border-radius: 8px; padding: 10px 14px;
+    color: #c53030; font-size: 0.85rem;
+    margin-bottom: 14px; display: none;
+}
+.msg-error.visible { display: block; }
+.msg-ok {
+    background: #f0fff4; border: 1px solid #c6f6d5;
+    border-radius: 8px; padding: 10px 14px;
+    color: #276749; font-size: 0.85rem;
+    margin-bottom: 14px; display: none;
+}
+.msg-ok.visible { display: block; }
+.btn-primario {
+    width: 100%; padding: 14px;
+    background: var(--primary); color: white; border: none;
+    border-radius: 10px; font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 1rem; cursor: pointer;
+    transition: all 0.25s; margin-top: 4px;
+}
+.btn-primario:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(30,58,95,0.3); }
+
+/* ============================================================
+   APP PRINCIPAL
+   ============================================================ */
+#app-inquilino { display: none; }
+
+.container-inq {
+    max-width: 900px; margin: 0 auto;
+    background: white; border-radius: 20px;
+    box-shadow: var(--shadow); min-height: 85vh; overflow: hidden;
+}
+
+/* Header */
+.header-inq {
+    background: var(--gradient-header);
+    padding: 22px 28px 20px;
+    display: flex; align-items: center; gap: 16px;
+    color: white;
+}
+.header-icono-inq {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.25);
+}
+.header-texto-inq h1 { font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px; }
+.header-texto-inq p { font-size: 0.82rem; opacity: 0.7; margin-top: 2px; }
+.header-acciones-inq { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.btn-header {
+    background: rgba(255,255,255,0.15); color: white;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    padding: 8px 16px; border-radius: 10px;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 0.85rem; cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-header:hover { background: rgba(255,255,255,0.25); }
+
+/* Nav tabs */
+.nav-tabs-inq {
+    display: flex; gap: 4px;
+    padding: 14px 20px 0; background: white;
+    border-bottom: 2px solid #eef2ff;
+    overflow-x: auto;
+}
+.nav-tab {
+    padding: 10px 20px; border: none; background: transparent;
+    color: var(--text-light); font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 0.9rem; cursor: pointer;
+    border-radius: 10px 10px 0 0; border-bottom: 3px solid transparent;
+    white-space: nowrap; transition: all 0.2s;
+}
+.nav-tab:hover { color: var(--primary); background: #f5f7ff; }
+.nav-tab.activo { color: var(--primary); border-bottom-color: var(--primary); background: #eef2ff; }
+
+/* Contenido */
+.contenido-inq { padding: 24px 24px; }
+
+/* Secciones */
+.seccion { display: none; }
+.seccion.activa { display: block; animation: fadeUp 0.3s ease; }
+
+/* Cards */
+.card {
+    background: white; border: 1.5px solid #e3e8ff;
+    padding: 20px; border-radius: var(--radius);
+    border-left: 5px solid var(--accent-dark);
+    box-shadow: var(--shadow-card);
+    transition: all 0.22s; margin-bottom: 14px;
+}
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.card h4 { font-size: 1rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+.card p { font-size: 0.85rem; color: var(--text-light); margin: 3px 0; }
+
+/* Badges de estado */
+.badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 0.78rem; font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+}
+.badge-verde { background: #e8f5e9; color: #2e7d32; border: 1.5px solid #a5d6a7; }
+.badge-rojo { background: #fff5f5; color: #c62828; border: 1.5px solid #ef9a9a; }
+.badge-naranja { background: #fff8e1; color: #e65100; border: 1.5px solid #ffcc80; }
+.badge-azul { background: #e3f2fd; color: #1565c0; border: 1.5px solid #90caf9; }
+.badge-gris { background: #f5f5f5; color: #616161; border: 1.5px solid #e0e0e0; }
+
+/* Tabla historial */
+.tabla-wrap { overflow-x: auto; margin-top: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+thead th {
+    background: var(--primary); color: white;
+    padding: 10px 14px; text-align: left;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.82rem;
+}
+thead th:first-child { border-radius: 8px 0 0 0; }
+thead th:last-child { border-radius: 0 8px 0 0; }
+tbody tr { border-bottom: 1px solid #eef2ff; transition: background 0.15s; }
+tbody tr:hover { background: #f5f7ff; }
+tbody td { padding: 10px 14px; color: var(--text-body); }
+tfoot td { padding: 10px 14px; font-weight: 800; color: var(--primary); font-family: 'Nunito', sans-serif; background: #eef2ff; }
+
+/* Recibo card */
+.recibo-card {
+    border: 1.5px solid #e3e8ff; border-radius: 12px;
+    padding: 16px; margin-bottom: 10px;
+    background: white; display: flex;
+    align-items: center; gap: 14px;
+    box-shadow: var(--shadow-card); transition: all 0.2s;
+}
+.recibo-card:hover { box-shadow: var(--shadow-hover); transform: translateX(3px); }
+.recibo-ico {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; flex-shrink: 0;
+}
+.recibo-ico.agua { background: #e3f2fd; }
+.recibo-ico.luz { background: #fffde7; }
+.recibo-ico.servicio { background: #f3e5f5; }
+.recibo-info { flex: 1; }
+.recibo-info strong { display: block; color: var(--primary); font-size: 0.95rem; font-weight: 800; }
+.recibo-info span { color: var(--text-light); font-size: 0.82rem; }
+.recibo-monto { text-align: right; }
+.recibo-monto strong { display: block; font-size: 1.3rem; font-weight: 900; font-family: 'Nunito', sans-serif; color: var(--primary); }
+.recibo-monto small { color: var(--text-light); font-size: 0.75rem; }
+
+/* Badge de evidencia fotográfica */
+.badge-foto {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 0.76rem; font-weight: 700;
+    background: #e8f5e9; color: #1b5e20;
+    border: 1.5px solid #a5d6a7;
+    cursor: pointer; transition: all 0.2s;
+    font-family: 'Nunito', sans-serif;
+    margin-top: 6px;
+}
+.badge-foto:hover { background: #c8e6c9; transform: scale(1.04); }
+
+/* Imagen de evidencia dentro del modal */
+.evidencia-wrap {
+    margin-top: 16px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid #c5cae9;
+    background: #eef2ff;
+    text-align: center;
+}
+.evidencia-wrap .evidencia-label {
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--primary);
+    background: #eef2ff;
+    display: flex; align-items: center; gap: 6px;
+    border-bottom: 1.5px solid #c5cae9;
+    font-family: 'Nunito', sans-serif;
+}
+.evidencia-wrap img {
+    width: 100%; max-height: 320px;
+    object-fit: contain;
+    display: block;
+    cursor: zoom-in;
+    background: #f5f7ff;
+    transition: opacity 0.2s;
+}
+.evidencia-wrap img:hover { opacity: 0.92; }
+.evidencia-btn-ver {
+    display: block; padding: 10px;
+    font-size: 0.82rem; color: var(--primary);
+    font-weight: 700; background: none; border: none;
+    cursor: pointer; font-family: 'Nunito', sans-serif;
+    text-decoration: underline;
+}
+
+/* Lightbox para imagen completa */
+#lightbox-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,15,40,0.92);
+    z-index: 9998; align-items: center; justify-content: center;
+    padding: 20px; backdrop-filter: blur(6px);
+}
+#lightbox-overlay.visible { display: flex; }
+#lightbox-overlay img {
+    max-width: 100%; max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: fadeUp 0.25s ease;
+}
+#lightbox-close {
+    position: fixed; top: 18px; right: 22px;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white; font-size: 1.4rem;
+    border-radius: 50%; width: 42px; height: 42px;
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: background 0.2s; z-index: 9999;
+}
+#lightbox-close:hover { background: rgba(255,255,255,0.3); }
+
+/* Indicador de evidencia en historial */
+.evidencia-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 700;
+    background: #e8f5e9; color: #1b5e20;
+    border: 1.5px solid #a5d6a7;
+    margin-left: 8px; cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    vertical-align: middle;
+}
+.evidencia-chip:hover { background: #c8e6c9; }
+
+/* Botones servicios */
+.grid-servicios-sol { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
+.btn-servicio-sol {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 20px 14px; border-radius: 14px;
+    border: 2px solid var(--border-color); background: white;
+    cursor: pointer; transition: all 0.22s;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    color: var(--primary); font-size: 0.9rem;
+}
+.btn-servicio-sol .srv-ico { font-size: 2rem; }
+.btn-servicio-sol small { font-weight: 600; color: var(--text-light); font-size: 0.78rem; }
+.btn-servicio-sol:hover { border-color: var(--primary); background: #eef2ff; transform: translateY(-3px); box-shadow: var(--shadow); }
+.btn-servicio-sol.activo { border-color: var(--accent-dark); background: #e8f5e9; color: #2e7d32; }
+.btn-servicio-sol.activo small { color: #2e7d32; }
+.btn-servicio-sol.pendiente { border-color: var(--warning); background: #fff8e1; color: #e65100; }
+.btn-servicio-sol.pendiente small { color: #e65100; }
+
+/* Modal */
+.modal {
+    display: none; position: fixed; z-index: 2000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(15,25,50,0.65); backdrop-filter: blur(5px);
+    overflow-y: auto; align-items: flex-start; justify-content: center;
+    padding: 20px;
+}
+.modal.visible { display: flex; }
+.modal-content {
+    background: white; margin: 40px auto; padding: 28px;
+    border-radius: 20px; width: 95%; max-width: 480px;
+    max-height: 92vh; overflow-y: auto; position: relative;
+    animation: fadeUp 0.3s ease;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+}
+.modal-content h3 { font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-bottom: 16px; text-align: center; }
+.modal-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.btn-guardar {
+    background: var(--accent-dark); color: white;
+    padding: 13px 20px; font-family: 'Nunito', sans-serif;
+    font-weight: 800; border-radius: 10px; flex: 2;
+    font-size: 0.95rem; border: none; cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-guardar:hover { background: var(--accent); transform: translateY(-2px); }
+.btn-cancelar {
+    background: #e2e8f0; color: var(--text);
+    padding: 13px 16px; font-family: 'Nunito', sans-serif;
+    font-weight: 700; border-radius: 10px; flex: 1;
+    font-size: 0.9rem; border: none; cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-cancelar:hover { background: #cbd5e0; }
+
+/* Info box */
+.info-box {
+    background: #eef2ff; border: 1.5px solid #c5cae9;
+    border-radius: 12px; padding: 14px; margin-bottom: 16px;
+}
+.info-box p { font-size: 0.85rem; color: var(--text-body); }
+.info-box strong { color: var(--primary); }
+
+/* Section header */
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+.section-header h2 { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+
+/* Resumen cards */
+.resumen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.resumen-card {
+    background: white; border-radius: 14px; padding: 16px;
+    box-shadow: var(--shadow-card); border: 1.5px solid #e3e8ff;
+    text-align: center;
+}
+.resumen-card .rc-ico { font-size: 2rem; margin-bottom: 8px; display: block; }
+.resumen-card .rc-val { font-size: 1.6rem; font-weight: 900; font-family: 'Nunito', sans-serif; color: var(--primary); display: block; }
+.resumen-card .rc-lbl { font-size: 0.78rem; color: var(--text-light); font-weight: 600; display: block; margin-top: 2px; }
+
+/* Alert panel */
+#panel-alertas-inq { margin-bottom: 18px; }
+.alerta-card {
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;
+    display: flex; align-items: flex-start; gap: 12px;
+}
+.alerta-card.mora { background: #fff5f5; border: 2px solid var(--danger); }
+.alerta-card.info { background: #e3f2fd; border: 1.5px solid #90caf9; }
+.alerta-card.ok { background: #e8f5e9; border: 1.5px solid #a5d6a7; }
+.alerta-ico { font-size: 1.6rem; flex-shrink: 0; }
+.alerta-txt strong { display: block; font-family: 'Nunito', sans-serif; font-weight: 800; margin-bottom: 2px; }
+.alerta-txt p { font-size: 0.85rem; color: var(--text-body); }
+
+/* Mes selector */
+.mes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+.btn-mes {
+    padding: 8px; border: 1.5px solid var(--border-color); background: white;
+    border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 0.82rem; color: var(--text); cursor: pointer; transition: all 0.2s;
+}
+.btn-mes:hover { border-color: var(--primary); background: #eef2ff; }
+.btn-mes.activo { background: var(--primary); color: white; border-color: var(--primary); }
+
+/* Desglose recibo */
+.desglose {
+    background: #f8fafc; border-radius: 12px;
+    padding: 14px; border: 1.5px solid #e3e8ff;
+}
+.desglose-fila {
+    display: flex; justify-content: space-between;
+    padding: 6px 0; border-bottom: 1px dashed #e3e8ff;
+    font-size: 0.88rem; color: var(--text-body);
+}
+.desglose-fila:last-child { border-bottom: none; }
+.desglose-total {
+    display: flex; justify-content: space-between;
+    padding: 10px 0 4px; font-weight: 900;
+    font-family: 'Nunito', sans-serif; font-size: 1.1rem;
+    color: var(--primary); border-top: 2px solid #c5cae9; margin-top: 6px;
+}
+
+/* Notif badge en tab */
+.tab-notif {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--danger); color: white;
+    width: 18px; height: 18px; border-radius: 50%;
+    font-size: 0.7rem; font-weight: 800;
+    margin-left: 5px; vertical-align: middle;
+    animation: pulso 2s infinite;
+}
+@keyframes pulso { 0%,100%{opacity:1}50%{opacity:0.7} }
+
+/* Textarea */
+textarea {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid var(--border-color); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+    resize: vertical; color: var(--text); outline: none;
+    transition: border-color 0.2s;
+}
+textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,95,0.08); }
+
+/* Select */
+select {
+    width: 100%; padding: 12px 14px !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: 10px !important; font-size: 0.95rem !important;
+    font-family: 'DM Sans', sans-serif; color: var(--text);
+    background: white; outline: none; transition: border-color 0.2s;
+}
+select:focus { border-color: var(--primary) !important; }
+
+/* Perfil */
+.perfil-avatar {
+    width: 80px; height: 80px; border-radius: 20px;
+    background: var(--gradient-header);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2rem; margin: 0 auto 14px; border: 4px solid white;
+    box-shadow: 0 6px 20px rgba(26,35,126,0.2);
+}
+.perfil-nombre { text-align: center; font-size: 1.4rem; font-weight: 900; color: var(--primary); }
+.perfil-dui { text-align: center; color: var(--text-light); font-size: 0.88rem; margin-bottom: 16px; }
+.perfil-fila {
+    display: flex; justify-content: space-between;
+    align-items: center; padding: 10px 0;
+    border-bottom: 1px solid #eef2ff; font-size: 0.88rem;
+}
+.perfil-fila:last-child { border-bottom: none; }
+.perfil-fila label { font-weight: 700; color: var(--text-light); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.perfil-fila span { color: var(--text-body); font-weight: 600; }
+
+/* Responsive */
+@media (max-width: 600px) {
+    .header-inq { flex-wrap: wrap; gap: 10px; }
+    .container-inq { border-radius: 12px; }
+    .nav-tabs-inq { padding: 10px 12px 0; }
+    .nav-tab { padding: 8px 14px; font-size: 0.82rem; }
+    .contenido-inq { padding: 16px; }
+    .mes-grid { grid-template-columns: repeat(3, 1fr); }
+    .resumen-grid { grid-template-columns: repeat(2, 1fr); }
+    .grid-servicios-sol { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 768px) {
+    .container-inq { margin: 20px auto; }
+}
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+
+/* Solicitud list item */
+.solicitud-item {
+    background: white; border: 1.5px solid #e3e8ff;
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: var(--shadow-card);
+}
+.solicitud-ico { font-size: 1.8rem; flex-shrink: 0; }
+.solicitud-info { flex: 1; }
+.solicitud-info strong { display: block; font-weight: 800; color: var(--primary); }
+.solicitud-info small { color: var(--text-light); font-size: 0.8rem; }
+.empty-state {
+    text-align: center; padding: 40px 20px;
+    color: var(--text-light);
+}
+.empty-state .emo { font-size: 3rem; display: block; margin-bottom: 10px; }
+.empty-state p { font-size: 0.9rem; }
+
+/* Hint text */
+.hint { font-size: 0.78rem; color: var(--text-light); margin-top: 4px; display: block; }
+</style>
+</head>
+
+<!-- Firebase SDKs (misma versión que index.html) -->
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+<script>
+// ============================================================
+// FIREBASE INIT — misma configuración que index.html
+// ============================================================
+const firebaseConfig = {
+    apiKey: "AIzaSyDdxU2HtBUtX0ehFTB868-2_LrOv8-t_rI",
+    authDomain: "administracion-san-salvador.firebaseapp.com",
+    projectId: "administracion-san-salvador",
+    storageBucket: "administracion-san-salvador.firebasestorage.app",
+    messagingSenderId: "802082240964",
+    appId: "1:802082240964:web:0b3563aa7eb88d6416cc91"
+};
+firebase.initializeApp(firebaseConfig);
+const db   = firebase.firestore();
+const auth = firebase.auth();
+
+// Autenticación anónima: da al inquilino un token real de Firebase
+// (request.auth != null) sin requerir email/contraseña.
+// Las reglas de Firestore validan este token en cada operación.
+// Una vez que el token esté listo, intentamos el auto-login si hay sesión guardada.
+auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+        // Aún no hay sesión anónima — pedirla
+        auth.signInAnonymously().catch(e => console.warn('Auth anónima falló:', e));
+        return;
+    }
+    // Ya tenemos token válido — intentar restaurar sesión guardada
+    const duiGuardado   = localStorage.getItem('inq_dui');
+    const adminGuardado = localStorage.getItem('inq_adminUID');
+    if (!duiGuardado || !adminGuardado) return;   // no había sesión, mostrar login normalmente
+    if (inquilinoData) return;                     // ya hay sesión activa en memoria
+
+    mostrarLoader();
+    try {
+        const cohSnap = await db.collection('usuarios').doc(adminGuardado)
+            .collection('cohabitantes')
+            .where('dui', '==', duiGuardado)
+            .limit(1).get();
+
+        if (cohSnap.empty) {
+            localStorage.removeItem('inq_dui');
+            localStorage.removeItem('inq_adminUID');
+            return;
+        }
+
+        const cohData = { id: cohSnap.docs[0].id, ...cohSnap.docs[0].data() };
+
+        if (!cohData.portalActivo || !cohData.passwordHash) {
+            localStorage.removeItem('inq_dui');
+            localStorage.removeItem('inq_adminUID');
+            return;
+        }
+
+        const uDoc = await db.collection('usuarios').doc(adminGuardado).get();
+        if (uDoc.exists) {
+            const d = uDoc.data();
+            adminTitulo = d.tituloApp || 'Mi Ciudad';
+            adminNombre = d.nombre    || '';
+            adminIcono  = d.iconoURL  || null;
+        }
+
+        inquilinoData = cohData;
+        adminUID      = adminGuardado;
+
+        await cargarDatosAdmin(adminUID);
+        iniciarAppInquilino();
+    } catch(e) {
+        console.warn('Auto-login fallido:', e);
+    } finally {
+        ocultarLoader();
+    }
+});
+
+// ============================================================
+// ESTADO GLOBAL DEL INQUILINO
+// ============================================================
+let inquilinoData    = null;   // datos del cohabitante
+let adminUID         = null;   // UID del admin al que pertenece
+let adminNombre      = '';
+let adminTitulo      = 'Mi Ciudad';
+let adminIcono       = null;
+let todosCohabitantes = [];
+let facturas         = [];
+let pagos            = [];
+let secciones        = [];
+let serviciosOpcionales = [];
+let residenciales    = [];
+let solicitudes      = [];     // colección 'solicitudes' dentro del admin
+
+const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+let mesSeleccionado  = MESES[new Date().getMonth()];
+</script>
+
+<body>
+
+<div class="loader-overlay" id="loader">
+    <div class="loader-spinner"></div>
+</div>
+
+<!-- ============================================================
+     PANTALLA DE LOGIN
+     ============================================================ -->
+<div id="pantalla-login">
+    <div class="login-logo">
+        <span class="logo-emoji" id="login-logo-emoji">🏘️</span>
+        <h1 id="login-titulo">Portal del Inquilino</h1>
+        <p>Accede con tu número de DUI registrado</p>
+    </div>
+    <div class="login-panel">
+        <h2>Iniciar Sesión</h2>
+        <p class="subtitulo">Ingresa tu DUI para ver tu cuenta</p>
+        <div id="err-login-inq" class="msg-error"></div>
+        <div class="campo-grupo">
+            <label>Número de DUI</label>
+            <input type="text" id="login-dui" placeholder="00000000-0" maxlength="10" inputmode="numeric">
+            <span class="hint">Formato: 12345678-9</span>
+        </div>
+        <div class="campo-grupo">
+            <label>Contraseña</label>
+            <div class="input-icon-wrap">
+                <input type="password" id="login-pass-inq" placeholder="Tu contraseña" maxlength="64">
+                <button type="button" class="toggle-pass" onclick="toggleVerInq('login-pass-inq', this)">👁️</button>
+            </div>
+        </div>
+        <button class="btn-primario" onclick="loginInquilino()">🔑 Entrar</button>
+
+        <!-- Mensaje de primera vez -->
+        <div style="margin-top:18px;background:#eef2ff;border:1.5px solid #c5cae9;border-radius:12px;padding:14px 16px;">
+            <p style="font-size:0.83rem;color:var(--primary);font-weight:800;margin-bottom:6px;">¿Aún no tienes cuenta?</p>
+            <p style="font-size:0.81rem;color:var(--text-body);line-height:1.6;margin-bottom:10px;">
+                Solicita un <strong>código de activación</strong> a tu administrador. Una vez que lo tengas, presiona el botón de abajo para activar tu acceso.
+            </p>
+            <button onclick="mostrarPantallaActivacion()" style="width:100%;padding:11px;background:white;color:var(--primary);border:2px solid var(--primary);border-radius:10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;transition:all 0.2s;">
+                ✨ Activa tu cuenta aquí
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     PANTALLA DE ACTIVACIÓN DE CUENTA (primera vez)
+     ============================================================ -->
+<div id="pantalla-activacion" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#1a237e 0%,#283593 40%,#3949ab 70%,#1565c0 100%);position:relative;overflow:hidden;">
+    <div class="login-logo">
+        <span class="logo-emoji" id="act-logo-emoji">🏘️</span>
+        <h1 id="act-titulo">Portal del Inquilino</h1>
+        <p>Activa tu cuenta por primera vez</p>
+    </div>
+
+    <!-- PASO 1: ingresar DUI + código -->
+    <div class="login-panel" id="act-paso1">
+        <h2>🔑 Activar Cuenta</h2>
+        <p class="subtitulo">Tu administrador te habrá enviado un código de activación por WhatsApp</p>
+        <div id="err-activacion" class="msg-error"></div>
+        <div class="campo-grupo">
+            <label>Tu número de DUI</label>
+            <input type="text" id="act-dui" placeholder="00000000-0" maxlength="10" inputmode="numeric">
+            <span class="hint">Formato: 12345678-9</span>
+        </div>
+        <div class="campo-grupo">
+            <label>Código de activación</label>
+            <input type="text" id="act-codigo" placeholder="Ej: A3X9KP2M" maxlength="8" style="text-transform:uppercase;letter-spacing:2px;font-weight:700;">
+            <span class="hint">Código de 8 caracteres que te envió tu administrador</span>
+        </div>
+        <button class="btn-primario" onclick="verificarCodigoActivacion()">✅ Verificar código</button>
+        <p style="text-align:center;margin-top:14px;font-size:0.83rem;color:var(--text-light);">
+            <a onclick="mostrarPantallaLogin()" style="color:rgba(255,255,255,0.0);font-weight:700;cursor:pointer;text-decoration:underline;">← Volver al inicio de sesión</a>
+        </p>
+    </div>
+
+    <!-- PASO 2: crear contraseña -->
+    <div class="login-panel" id="act-paso2" style="display:none;">
+        <h2>🔒 Crea tu Contraseña</h2>
+        <p class="subtitulo" id="act-bienvenida">Hola, elige una contraseña segura para tu cuenta</p>
+        <div id="err-nueva-pass" class="msg-error"></div>
+        <div id="ok-nueva-pass" class="msg-ok"></div>
+        <div class="campo-grupo">
+            <label>Nueva contraseña</label>
+            <div class="input-icon-wrap">
+                <input type="password" id="act-pass1" placeholder="Mín. 6 caracteres" maxlength="64">
+                <button type="button" class="toggle-pass" onclick="toggleVerInq('act-pass1', this)">👁️</button>
+            </div>
+        </div>
+        <div class="campo-grupo">
+            <label>Confirmar contraseña</label>
+            <div class="input-icon-wrap">
+                <input type="password" id="act-pass2" placeholder="Repite tu contraseña" maxlength="64">
+                <button type="button" class="toggle-pass" onclick="toggleVerInq('act-pass2', this)">👁️</button>
+            </div>
+        </div>
+        <button class="btn-primario" onclick="guardarNuevaPassword()">💾 Guardar y entrar</button>
+    </div>
+</div>
+
+<!-- ============================================================
+     APP DEL INQUILINO
+     ============================================================ -->
+<div id="app-inquilino">
+    <div class="container-inq">
+
+        <!-- Header -->
+        <header class="header-inq">
+            <div class="header-icono-inq" id="header-icono">🏘️</div>
+            <div class="header-texto-inq">
+                <h1 id="header-titulo">Portal del Inquilino</h1>
+                <p id="header-subtitulo">Bienvenido</p>
+            </div>
+            <div class="header-acciones-inq">
+                <button class="btn-header" onclick="cerrarSesionInq()">🚪 Salir</button>
+            </div>
+        </header>
+
+        <!-- Nav tabs -->
+        <nav class="nav-tabs-inq">
+            <button class="nav-tab activo" onclick="mostrarSeccion('inicio')" id="tab-inicio">🏠 Inicio</button>
+            <button class="nav-tab" onclick="mostrarSeccion('historial')" id="tab-historial">📋 Historial</button>
+            <button class="nav-tab" onclick="mostrarSeccion('recibos')" id="tab-recibos">🧾 Recibos</button>
+            <button class="nav-tab" onclick="mostrarSeccion('servicios')" id="tab-servicios">⚡ Servicios</button>
+            <button class="nav-tab" onclick="mostrarSeccion('perfil')" id="tab-perfil">👤 Mi Perfil</button>
+        </nav>
+
+        <!-- Contenido -->
+        <div class="contenido-inq">
+
+            <!-- ================================================
+                 SECCIÓN INICIO
+                 ================================================ -->
+            <div class="seccion activa" id="sec-inicio">
+                <div id="panel-alertas-inq"></div>
+
+                <!-- Resumen rápido -->
+                <div class="resumen-grid" id="resumen-grid"></div>
+
+                <!-- Estado pago mes actual -->
+                <div class="section-header">
+                    <h2>📅 Estado — <span id="mes-actual-lbl"></span></h2>
+                </div>
+                <div id="card-pago-mes"></div>
+
+                <!-- Próximos recibos del mes -->
+                <div class="section-header" style="margin-top:20px;">
+                    <h2>🧾 Tus recibos de este mes</h2>
+                </div>
+                <div id="recibos-inicio"></div>
+            </div>
+
+            <!-- ================================================
+                 SECCIÓN HISTORIAL DE PAGOS
+                 ================================================ -->
+            <div class="seccion" id="sec-historial">
+                <div class="section-header">
+                    <h2>📋 Historial de Pagos</h2>
+                </div>
+                <p style="color:var(--text-light);font-size:0.85rem;margin-bottom:14px;">Selecciona un mes para ver el estado de tu pago.</p>
+                <div class="mes-grid" id="mes-grid-historial"></div>
+                <div id="contenido-historial"></div>
+            </div>
+
+            <!-- ================================================
+                 SECCIÓN RECIBOS
+                 ================================================ -->
+            <div class="seccion" id="sec-recibos">
+                <div class="section-header">
+                    <h2>🧾 Mis Recibos</h2>
+                </div>
+                <p style="color:var(--text-light);font-size:0.85rem;margin-bottom:14px;">Aquí puedes ver el desglose de los recibos que se cobran en tu zona. Los montos compartidos se dividen entre los ocupantes.</p>
+
+                <!-- Selector de mes -->
+                <div class="campo-grupo" style="max-width:220px;margin-bottom:18px;">
+                    <label>Mes</label>
+                    <select id="select-mes-recibos" onchange="renderRecibos()">
+                        <option value="Enero">Enero</option><option value="Febrero">Febrero</option>
+                        <option value="Marzo">Marzo</option><option value="Abril">Abril</option>
+                        <option value="Mayo">Mayo</option><option value="Junio">Junio</option>
+                        <option value="Julio">Julio</option><option value="Agosto">Agosto</option>
+                        <option value="Septiembre">Septiembre</option><option value="Octubre">Octubre</option>
+                        <option value="Noviembre">Noviembre</option><option value="Diciembre">Diciembre</option>
+                    </select>
+                </div>
+
+                <div id="lista-recibos"></div>
+
+                <!-- Desglose total -->
+                <div id="box-total-recibo" style="display:none;">
+                    <div class="card" style="border-left-color:#1a237e;margin-top:16px;">
+                        <h4>💵 Resumen de cobro del mes</h4>
+                        <div class="desglose" id="desglose-recibo" style="margin-top:10px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================================
+                 SECCIÓN SERVICIOS ADICIONALES
+                 ================================================ -->
+            <div class="seccion" id="sec-servicios">
+                <div class="section-header">
+                    <h2>⚡ Servicios Adicionales</h2>
+                </div>
+                <div class="info-box" style="margin-bottom:18px;">
+                    <p>Aquí puedes solicitar que se te agregue un servicio que no tenías al inicio de tu contrato. Al enviar la solicitud, el administrador recibirá una notificación y decidirá si aprobarla.</p>
+                </div>
+
+                <!-- Servicios actuales -->
+                <h3 style="font-size:1rem;color:var(--primary);margin-bottom:10px;">Tus servicios activos</h3>
+                <div id="servicios-activos" style="margin-bottom:20px;"></div>
+
+                <!-- Solicitar nuevo servicio -->
+                <h3 style="font-size:1rem;color:var(--primary);margin-bottom:10px;">Solicitar un nuevo servicio</h3>
+                <div id="grid-solicitar-servicios" class="grid-servicios-sol"></div>
+                <div id="no-servicios-disponibles" style="display:none;">
+                    <div class="empty-state">
+                        <span class="emo">✅</span>
+                        <p>Ya tienes todos los servicios disponibles activos.</p>
+                    </div>
+                </div>
+
+                <!-- Mis solicitudes enviadas -->
+                <div style="margin-top:24px;">
+                    <h3 style="font-size:1rem;color:var(--primary);margin-bottom:10px;">Mis solicitudes enviadas</h3>
+                    <div id="lista-mis-solicitudes"></div>
+                </div>
+            </div>
+
+            <!-- ================================================
+                 SECCIÓN PERFIL
+                 ================================================ -->
+            <div class="seccion" id="sec-perfil">
+                <div class="section-header">
+                    <h2>👤 Mi Perfil</h2>
+                </div>
+                <div class="card" style="max-width:500px;margin:0 auto;">
+                    <div class="perfil-avatar" id="perfil-avatar">👤</div>
+                    <div class="perfil-nombre" id="perfil-nombre">—</div>
+                    <div class="perfil-dui" id="perfil-dui">DUI: —</div>
+                    <div id="perfil-datos"></div>
+                    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;padding-top:18px;border-top:1.5px solid var(--border-color);">
+                        <button class="btn-primario" onclick="abrirModalCambiarPass()" style="background:var(--primary-vivid);">
+                            🔒 Cambiar contraseña
+                        </button>
+                        <button class="btn-primario" onclick="abrirModalRecuperarPass()" style="background:#607d8b;margin-top:0;">
+                            🆘 Olvidé mi contraseña
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /contenido-inq -->
+    </div><!-- /container-inq -->
+</div><!-- /app-inquilino -->
+
+<!-- ============================================================
+     LIGHTBOX: IMAGEN DE EVIDENCIA
+     ============================================================ -->
+<div id="lightbox-overlay" onclick="cerrarLightbox()">
+    <button id="lightbox-close" onclick="cerrarLightbox()">✕</button>
+    <img id="lightbox-img" src="" alt="Evidencia fotográfica del recibo">
+</div>
+
+<!-- ============================================================
+     MODAL: CONFIRMACIÓN DE SOLICITUD
+     ============================================================ -->
+<div id="modal-solicitud" class="modal">
+    <div class="modal-content">
+        <h3>📤 Enviar Solicitud de Servicio</h3>
+        <div class="info-box" style="margin-bottom:14px;">
+            <p>Estás solicitando agregar el servicio: <strong id="srv-solicitud-nombre">—</strong></p>
+            <p style="margin-top:4px;">Costo aproximado: <strong id="srv-solicitud-monto">—</strong></p>
+        </div>
+        <div class="campo-grupo">
+            <label>Motivo o comentario (opcional)</label>
+            <textarea id="comentario-solicitud" rows="3" placeholder="Ej: Necesito internet para trabajar desde casa este mes..."></textarea>
+        </div>
+        <div id="err-solicitud" class="msg-error"></div>
+        <div class="modal-actions">
+            <button class="btn-cancelar" onclick="cerrarModal('modal-solicitud')">Cancelar</button>
+            <button class="btn-guardar" onclick="confirmarSolicitud()">📤 Enviar Solicitud</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL: DETALLE DE RECIBO
+     ============================================================ -->
+<div id="modal-recibo-detalle" class="modal">
+    <div class="modal-content">
+        <h3 id="modal-recibo-titulo">Detalle del Recibo</h3>
+        <div id="modal-recibo-body"></div>
+        <div class="modal-actions">
+            <button class="btn-cancelar" onclick="cerrarModal('modal-recibo-detalle')">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL: CAMBIAR CONTRASEÑA
+     ============================================================ -->
+<div id="modal-cambiar-pass" class="modal">
+    <div class="modal-content">
+        <h3 style="color:var(--primary);margin-bottom:6px;">🔒 Cambiar Contraseña</h3>
+        <p style="color:var(--text-light);font-size:0.85rem;margin-bottom:18px;">Ingresa tu contraseña actual y luego elige la nueva.</p>
+        <div id="err-cambiar-pass" class="msg-error"></div>
+        <div id="ok-cambiar-pass" class="msg-ok"></div>
+        <div class="campo-grupo">
+            <label>Contraseña actual</label>
+            <div class="input-icon-wrap">
+                <input type="password" id="cp-actual" placeholder="Tu contraseña actual" maxlength="64">
+                <button type="button" class="toggle-pass" onclick="toggleVerInq('cp-actual', this)">👁️</button>
+            </div>
+        </div>
+        <div class="campo-grupo">
+            <label>Nueva contraseña</label>
+            <div class="input-icon-wrap">
+                <input type="password" id="cp-nueva1" placeholder="Mín. 6 caracteres" maxlength="64">
+                <button type="button" class="toggle-pass" onclick="toggleVerInq('cp-nueva1', this)">👁️</button>
+            </div>
+        </div>
+        <div class="campo-grupo">
+            <label>Confirmar nueva contraseña</label>
+            <div class="input-icon-wrap">
+                <input type="password" id="cp-nueva2" placeholder="Repite la nueva contraseña" maxlength="64">
+                <button type="button" class="toggle-pass" onclick="toggleVerInq('cp-nueva2', this)">👁️</button>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancelar" onclick="cerrarModal('modal-cambiar-pass')">Cancelar</button>
+            <button class="btn-guardar" onclick="confirmarCambioPass()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL: OLVIDÉ MI CONTRASEÑA
+     ============================================================ -->
+<div id="modal-recuperar-pass" class="modal">
+    <div class="modal-content">
+        <h3 style="color:#607d8b;margin-bottom:6px;">🆘 Olvidé mi Contraseña</h3>
+        <p style="color:var(--text-light);font-size:0.85rem;margin-bottom:18px;">
+            Para restablecer tu contraseña necesitas un nuevo código de activación.<br>
+            Contacta a tu administrador y pídele que te reenvíe el acceso al portal.
+        </p>
+        <div style="background:#eef2ff;border-radius:12px;padding:16px;border:1.5px solid var(--border-color);margin-bottom:18px;">
+            <p style="font-size:0.9rem;color:var(--primary);font-weight:700;margin-bottom:8px;">¿Qué debe hacer tu administrador?</p>
+            <p style="font-size:0.85rem;color:var(--text-body);line-height:1.6;">
+                1. Abrir el panel de administración<br>
+                2. Ir a <strong>Enviar Reporte por WhatsApp</strong><br>
+                3. Buscar tu nombre y presionar <strong>🔄 Reenviar acceso</strong><br>
+                4. Te llegará un nuevo código por WhatsApp
+            </p>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:18px;">
+            Una vez que recibas el nuevo código, cierra sesión y usa la opción <strong>"Activa tu cuenta aquí"</strong> en la pantalla de inicio de sesión.
+        </p>
+        <div class="modal-actions" style="justify-content:center;">
+            <button class="btn-cancelar" style="background:var(--primary);color:white;border-color:var(--primary);" onclick="cerrarModal('modal-recuperar-pass')">Entendido</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// UTILIDADES
+// ============================================================
+function mostrarLoader() { document.getElementById('loader').classList.add('visible'); }
+function ocultarLoader() { document.getElementById('loader').classList.remove('visible'); }
+
+function mostrarError(id, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('visible');
+    setTimeout(() => el.classList.remove('visible'), 6000);
+}
+
+function cerrarModal(id) { document.getElementById(id).classList.remove('visible'); }
+
+// Convierte "YYYY-MM-DD" → "DD/MM/YYYY"
+function formatFecha(fechaStr) {
+    if (!fechaStr) return '—';
+    const partes = fechaStr.split('-');
+    if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    return fechaStr;
+}
+
+function toggleVerInq(id, btn) {
+    const inp = document.getElementById(id);
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+    else { inp.type = 'password'; btn.textContent = '👁️'; }
+}
+
+function formatearDUI(val) {
+    let v = val.replace(/\D/g, '');
+    if (v.length > 8) v = v.substring(0,8) + '-' + v.substring(8,9);
+    return v;
+}
+
+document.getElementById('login-dui').addEventListener('input', e => {
+    e.target.value = formatearDUI(e.target.value);
+});
+document.getElementById('act-dui').addEventListener('input', e => {
+    e.target.value = formatearDUI(e.target.value);
+});
+document.getElementById('act-codigo').addEventListener('input', e => {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+});
+
+// Enter en login
+['login-dui','login-pass-inq'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') loginInquilino();
+    });
+});
+['act-dui','act-codigo'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') verificarCodigoActivacion();
+    });
+});
+['act-pass1','act-pass2'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') guardarNuevaPassword();
+    });
+});
+
+// ============================================================
+// NAVEGACIÓN ENTRE PANTALLAS
+// ============================================================
+function mostrarPantallaLogin() {
+    document.getElementById('pantalla-login').style.display      = 'flex';
+    document.getElementById('pantalla-activacion').style.display = 'none';
+}
+function mostrarPantallaActivacion() {
+    document.getElementById('pantalla-login').style.display      = 'none';
+    document.getElementById('pantalla-activacion').style.display = 'flex';
+    document.getElementById('act-paso1').style.display = 'block';
+    document.getElementById('act-paso2').style.display = 'none';
+    document.getElementById('act-dui').value    = '';
+    document.getElementById('act-codigo').value = '';
+    document.getElementById('err-activacion').classList.remove('visible');
+}
+
+// ============================================================
+// HASH SIMPLE (SHA-256 via Web Crypto) para almacenar contraseña
+// ============================================================
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data     = encoder.encode(password + '_inq_salt_sv');
+    const hashBuf  = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ============================================================
+// BUSCAR COHABITANTE POR DUI (en todos los admins)
+// ============================================================
+async function buscarCohabitantePorDUI(duiRaw) {
+    const usuariosSnap = await db.collection('usuarios').get();
+    for (const uDoc of usuariosSnap.docs) {
+        const uid = uDoc.id;
+        const cohSnap = await db.collection('usuarios').doc(uid)
+            .collection('cohabitantes')
+            .where('dui', '==', duiRaw)
+            .limit(1).get();
+        if (!cohSnap.empty) {
+            const uData = uDoc.data();
+            return {
+                coh:     { id: cohSnap.docs[0].id, ...cohSnap.docs[0].data() },
+                uid,
+                titulo:  uData.tituloApp || 'Mi Ciudad',
+                nombre:  uData.nombre    || '',
+                icono:   uData.iconoURL  || null
+            };
+        }
+    }
+    return null;
+}
+
+// ============================================================
+// LOGIN SEGURO (contraseña personalizada)
+// ============================================================
+async function loginInquilino() {
+    const duiRaw  = document.getElementById('login-dui').value.trim();
+    const passRaw = document.getElementById('login-pass-inq').value.trim();
+
+    if (!duiRaw || !passRaw) return mostrarError('err-login-inq', 'Ingresa tu DUI y contraseña.');
+
+    mostrarLoader();
+    try {
+        const resultado = await buscarCohabitantePorDUI(duiRaw);
+
+        if (!resultado) {
+            ocultarLoader();
+            return mostrarError('err-login-inq', 'No se encontró ningún inquilino con ese DUI. Contacta a tu administrador.');
+        }
+
+        const { coh, uid, titulo, nombre, icono } = resultado;
+
+        // Verificar que la cuenta esté activa
+        if (!coh.portalActivo || !coh.passwordHash) {
+            ocultarLoader();
+            return mostrarError('err-login-inq', 'Tu cuenta aún no está activada. Usa el enlace que te envió tu administrador para activarla.');
+        }
+
+        // Verificar contraseña (comparando hashes)
+        const hashIntento = await hashPassword(passRaw);
+        if (hashIntento !== coh.passwordHash) {
+            ocultarLoader();
+            return mostrarError('err-login-inq', 'Contraseña incorrecta.');
+        }
+
+        // Login exitoso
+        adminTitulo = titulo;
+        adminNombre = nombre;
+        adminIcono  = icono;
+        inquilinoData = coh;
+        adminUID      = uid;
+
+        await cargarDatosAdmin(adminUID);
+
+        localStorage.setItem('inq_dui',      duiRaw);
+        localStorage.setItem('inq_adminUID', adminUID);
+
+        iniciarAppInquilino();
+    } catch(e) {
+        console.error(e);
+        mostrarError('err-login-inq', 'Error al ingresar. Verifica tu conexión e intenta de nuevo.');
+    } finally {
+        ocultarLoader();
+    }
+}
+
+// ============================================================
+// PASO 1 DE ACTIVACIÓN: verificar DUI + código
+// ============================================================
+let _activacionCoh    = null;  // datos del cohabitante en proceso de activación
+let _activacionUID    = null;  // uid del admin
+
+async function verificarCodigoActivacion() {
+    const duiRaw  = document.getElementById('act-dui').value.trim();
+    const codigo  = document.getElementById('act-codigo').value.trim().toUpperCase();
+
+    if (!duiRaw || !codigo) {
+        return mostrarError('err-activacion', 'Ingresa tu DUI y el código de activación.');
+    }
+    if (codigo.length !== 8) {
+        return mostrarError('err-activacion', 'El código de activación debe tener 8 caracteres.');
+    }
+
+    mostrarLoader();
+    try {
+        const resultado = await buscarCohabitantePorDUI(duiRaw);
+
+        if (!resultado) {
+            ocultarLoader();
+            return mostrarError('err-activacion', 'No se encontró ningún inquilino con ese DUI. Contacta a tu administrador.');
+        }
+
+        const { coh, uid, titulo, icono } = resultado;
+
+        if (!coh.codigoActivacion) {
+            ocultarLoader();
+            return mostrarError('err-activacion', 'Tu administrador aún no ha generado tu código de acceso. Contáctale para que te lo envíe.');
+        }
+
+        if (coh.codigoActivacion !== codigo) {
+            ocultarLoader();
+            return mostrarError('err-activacion', 'Código de activación incorrecto. Verifica el código que te envió tu administrador.');
+        }
+
+        // Código correcto — guardar en variables temporales y pasar a paso 2
+        _activacionCoh = coh;
+        _activacionUID = uid;
+
+        // Actualizar logo/título en pantalla activación
+        if (icono) {
+            document.getElementById('act-logo-emoji').innerHTML = `<img src="${icono}" style="width:80px;height:80px;border-radius:18px;object-fit:cover;border:3px solid rgba(255,255,255,0.3);">`;
+        }
+        document.getElementById('act-titulo').textContent = titulo;
+
+        document.getElementById('act-paso1').style.display = 'none';
+        document.getElementById('act-paso2').style.display = 'block';
+        document.getElementById('act-bienvenida').textContent = `Hola, ${coh.n1} ${coh.a1}. Elige una contraseña segura.`;
+        document.getElementById('act-pass1').value = '';
+        document.getElementById('act-pass2').value = '';
+        document.getElementById('err-nueva-pass').classList.remove('visible');
+
+    } catch(e) {
+        console.error(e);
+        mostrarError('err-activacion', 'Error al verificar. Verifica tu conexión e intenta de nuevo.');
+    } finally {
+        ocultarLoader();
+    }
+}
+
+// ============================================================
+// PASO 2 DE ACTIVACIÓN: guardar nueva contraseña
+// ============================================================
+async function guardarNuevaPassword() {
+    const pass1 = document.getElementById('act-pass1').value;
+    const pass2 = document.getElementById('act-pass2').value;
+
+    if (!pass1 || !pass2) {
+        return mostrarError('err-nueva-pass', 'Completa ambos campos de contraseña.');
+    }
+    if (pass1.length < 6) {
+        return mostrarError('err-nueva-pass', 'La contraseña debe tener al menos 6 caracteres.');
+    }
+    if (pass1 !== pass2) {
+        return mostrarError('err-nueva-pass', 'Las contraseñas no coinciden.');
+    }
+    if (!_activacionCoh || !_activacionUID) {
+        return mostrarError('err-nueva-pass', 'Sesión de activación expirada. Vuelve al paso 1.');
+    }
+
+    mostrarLoader();
+    try {
+        const hash = await hashPassword(pass1);
+
+        // Guardar en Firestore: activar cuenta, guardar hash, borrar código de activación
+        await db.collection('usuarios').doc(_activacionUID)
+            .collection('cohabitantes').doc(String(_activacionCoh.id))
+            .set({
+                portalActivo:        true,
+                passwordHash:        hash,
+                codigoActivacion:    '',    // consumido, ya no sirve
+                activadoEn:          new Date().toISOString()
+            }, { merge: true });
+
+        // Iniciar sesión directamente
+        const cohActualizado = { ..._activacionCoh, portalActivo: true, passwordHash: hash, codigoActivacion: '' };
+        const uDoc = await db.collection('usuarios').doc(_activacionUID).get();
+        if (uDoc.exists) {
+            const d = uDoc.data();
+            adminTitulo = d.tituloApp || 'Mi Ciudad';
+            adminNombre = d.nombre    || '';
+            adminIcono  = d.iconoURL  || null;
+        }
+
+        inquilinoData = cohActualizado;
+        adminUID      = _activacionUID;
+
+        await cargarDatosAdmin(adminUID);
+
+        localStorage.setItem('inq_dui',      cohActualizado.dui);
+        localStorage.setItem('inq_adminUID', adminUID);
+
+        // Ocultar pantalla activación
+        document.getElementById('pantalla-activacion').style.display = 'none';
+
+        iniciarAppInquilino();
+    } catch(e) {
+        console.error(e);
+        mostrarError('err-nueva-pass', 'Error al guardar. Verifica tu conexión e intenta de nuevo.');
+    } finally {
+        ocultarLoader();
+    }
+}
+
+async function cargarDatosAdmin(uid) {
+    const [cohSnap, facSnap, pagSnap, secSnap, srvSnap, resSnap, solSnap] = await Promise.all([
+        db.collection('usuarios').doc(uid).collection('cohabitantes').get(),
+        db.collection('usuarios').doc(uid).collection('facturas').get(),
+        db.collection('usuarios').doc(uid).collection('pagos').get(),
+        db.collection('usuarios').doc(uid).collection('secciones').get(),
+        db.collection('usuarios').doc(uid).collection('serviciosOpcionales').get(),
+        db.collection('usuarios').doc(uid).collection('residenciales').get(),
+        db.collection('usuarios').doc(uid).collection('solicitudes').get()
+    ]);
+    todosCohabitantes   = cohSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    facturas            = facSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    pagos               = pagSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    secciones           = secSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    serviciosOpcionales = srvSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    residenciales       = resSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    solicitudes         = solSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Re-find inquilino in fresh data
+    inquilinoData = todosCohabitantes.find(c => c.dui === inquilinoData.dui) || inquilinoData;
+}
+
+// ============================================================
+// CERRAR SESIÓN
+// ============================================================
+function cerrarSesionInq() {
+    if (!confirm('¿Deseas cerrar sesión?')) return;
+    localStorage.removeItem('inq_dui');
+    localStorage.removeItem('inq_adminUID');
+    inquilinoData = null;
+    adminUID = null;
+    document.getElementById('app-inquilino').style.display = 'none';
+    document.getElementById('pantalla-login').style.display = 'flex';
+}
+
+// ============================================================
+// INICIAR APP
+// ============================================================
+function iniciarAppInquilino() {
+    // Actualizar header
+    const titulo = adminTitulo;
+    document.getElementById('header-titulo').textContent = titulo;
+    document.getElementById('login-titulo').textContent  = titulo;
+    document.getElementById('header-subtitulo').textContent =
+        `Bienvenido/a, ${inquilinoData.n1} ${inquilinoData.a1}`;
+    document.title = `Portal Inquilino — ${titulo}`;
+
+    if (adminIcono) {
+        document.getElementById('header-icono').innerHTML = `<img src="${adminIcono}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" alt="icono">`;
+        document.getElementById('login-logo-emoji').textContent = '';
+        document.getElementById('login-logo-emoji').innerHTML = `<img src="${adminIcono}" style="width:80px;height:80px;border-radius:18px;object-fit:cover;border:3px solid rgba(255,255,255,0.3);">`;
+    }
+
+    // Mostrar app
+    document.getElementById('pantalla-login').style.display = 'none';
+    document.getElementById('app-inquilino').style.display = 'block';
+
+    // Inicializar selector mes recibos
+    document.getElementById('select-mes-recibos').value = MESES[new Date().getMonth()];
+
+    // Renderizar secciones
+    mostrarSeccion('inicio');
+    renderMesGridHistorial();
+    renderPerfil();
+    renderServiciosAdicionales();
+}
+
+// ============================================================
+// NAVEGACIÓN ENTRE SECCIONES
+// ============================================================
+function mostrarSeccion(nombre) {
+    document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('activo'));
+    document.getElementById('sec-' + nombre).classList.add('activa');
+    document.getElementById('tab-' + nombre).classList.add('activo');
+
+    if (nombre === 'inicio')     renderInicio();
+    if (nombre === 'historial')  renderHistorial();
+    if (nombre === 'recibos')    renderRecibos();
+    if (nombre === 'servicios')  renderServiciosAdicionales();
+    if (nombre === 'perfil')     renderPerfil();
+}
+
+// ============================================================
+// CÁLCULO DE CUOTAS — replica la lógica de index.html
+// ============================================================
+function calcularCuotaMes(coh, mes) {
+    const seccionId   = coh.seccionId || '';
+    const cohsSeccion = seccionId
+        ? todosCohabitantes.filter(c => c.seccionId === seccionId)
+        : todosCohabitantes;
+    const numPersonas = cohsSeccion.reduce((s, c) => s + (parseInt(c.ocupantes) || 1), 0);
+    const ocupantes   = parseInt(coh.ocupantes) || 1;
+
+    // Facturas compartidas del mes
+    const factAgua = facturas.find(f => f.tipo === 'Recibo de Agua' && f.mes === mes &&
+        (f.seccionId === seccionId || (!seccionId && !f.seccionId))) ||
+        facturas.find(f => f.tipo === 'Recibo de Agua' && f.mes === mes);
+    const factLuz  = facturas.find(f => f.tipo === 'Recibo de Luz'  && f.mes === mes &&
+        (f.seccionId === seccionId || (!seccionId && !f.seccionId))) ||
+        facturas.find(f => f.tipo === 'Recibo de Luz'  && f.mes === mes);
+
+    const totalAgua = factAgua ? parseFloat(factAgua.monto) : 0;
+    const totalLuz  = factLuz  ? parseFloat(factLuz.monto)  : 0;
+    const cuotaAgua = numPersonas > 0 ? (totalAgua / numPersonas) * ocupantes : 0;
+    const cuotaLuz  = numPersonas > 0 ? (totalLuz  / numPersonas) * ocupantes : 0;
+
+    // Servicios opcionales
+    let totalServicios = 0;
+    const detalleServicios = [];
+    for (const srv of serviciosOpcionales) {
+        if (!coh.servicios || !coh.servicios[srv.id]) continue;
+        let cuota = parseFloat(srv.monto) || 0;
+        if (srv.tipo === 'compartido') {
+            const tot = todosCohabitantes.filter(c => c.servicios && c.servicios[srv.id]).length;
+            cuota = tot > 0 ? cuota / tot : cuota;
+        }
+        totalServicios += cuota;
+        detalleServicios.push({ nombre: srv.nombre, tipo: srv.tipo, monto: cuota });
+    }
+
+    const alquiler = parseFloat(coh.alquiler) || 0;
+    const total = alquiler + cuotaAgua + cuotaLuz + totalServicios;
+
+    const sec = secciones.find(s => String(s.id) === String(seccionId));
+
+    return {
+        alquiler, cuotaAgua, cuotaLuz, totalServicios,
+        detalleServicios, total, numPersonas, ocupantes,
+        totalAgua, totalLuz, secNombre: sec ? sec.nombre : '',
+        factAgua, factLuz
+    };
+}
+
+// ============================================================
+// RENDER INICIO
+// ============================================================
+function renderInicio() {
+    const coh = inquilinoData;
+    const mesActual = MESES[new Date().getMonth()];
+    document.getElementById('mes-actual-lbl').textContent = `${mesActual} ${new Date().getFullYear()}`;
+
+    // --- Alertas ---
+    const panelAlertas = document.getElementById('panel-alertas-inq');
+    panelAlertas.innerHTML = '';
+    const pagoMes = pagos.find(p => String(p.cohabitanteId) === String(coh.id) && p.mes === mesActual);
+    const diaHoy  = new Date().getDate();
+
+    if (pagoMes) {
+        panelAlertas.innerHTML = `
+        <div class="alerta-card ok">
+            <div class="alerta-ico">✅</div>
+            <div class="alerta-txt">
+                <strong>Pago de ${mesActual} confirmado</strong>
+                <p>Tu pago de $${pagoMes.monto} fue registrado el ${formatFecha(pagoMes.fecha)}. ¡Estás al día!</p>
+            </div>
+        </div>`;
+    } else if (diaHoy >= 8) {
+        panelAlertas.innerHTML = `
+        <div class="alerta-card mora" style="animation:pulso 2.5s infinite;">
+            <div class="alerta-ico">🚨</div>
+            <div class="alerta-txt">
+                <strong style="color:#c62828;">⚠️ Pago pendiente — ${mesActual}</strong>
+                <p>Llevas ${diaHoy - 7} día(s) sin registrar pago este mes. Se puede generar mora del 10%. Contacta a tu administrador.</p>
+            </div>
+        </div>`;
+    } else {
+        panelAlertas.innerHTML = `
+        <div class="alerta-card info">
+            <div class="alerta-ico">📋</div>
+            <div class="alerta-txt">
+                <strong>Pago de ${mesActual} pendiente</strong>
+                <p>Aún no se ha registrado tu pago de este mes. Tienes hasta el día 7 sin mora.</p>
+            </div>
+        </div>`;
+    }
+
+    // --- Resumen grid ---
+    const cuota = calcularCuotaMes(coh, mesActual);
+    const totalPagado = pagos.filter(p => String(p.cohabitanteId) === String(coh.id)).length;
+    const totalPendiente = MESES.filter((m, i) => {
+        if (i > new Date().getMonth()) return false;
+        if (!debePagar(coh, m)) return false;
+        return !pagos.find(p => String(p.cohabitanteId) === String(coh.id) && p.mes === m);
+    }).length;
+
+    document.getElementById('resumen-grid').innerHTML = `
+        <div class="resumen-card">
+            <span class="rc-ico">💵</span>
+            <span class="rc-val">$${cuota.total.toFixed(2)}</span>
+            <span class="rc-lbl">Cobro este mes</span>
+        </div>
+        <div class="resumen-card">
+            <span class="rc-ico">✅</span>
+            <span class="rc-val">${totalPagado}</span>
+            <span class="rc-lbl">Meses pagados</span>
+        </div>
+        <div class="resumen-card">
+            <span class="rc-ico">${totalPendiente > 0 ? '⚠️' : '🎉'}</span>
+            <span class="rc-val">${totalPendiente}</span>
+            <span class="rc-lbl">Meses pendientes</span>
+        </div>
+        <div class="resumen-card">
+            <span class="rc-ico">🏠</span>
+            <span class="rc-val">$${parseFloat(coh.alquiler||0).toFixed(2)}</span>
+            <span class="rc-lbl">Alquiler mensual</span>
+        </div>`;
+
+    // --- Estado pago mes ---
+    const cardPago = document.getElementById('card-pago-mes');
+    if (pagoMes) {
+        cardPago.innerHTML = `
+        <div class="card" style="border-left-color:#27ae60;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                <div>
+                    <span class="badge badge-verde">✔ AL DÍA</span>
+                    <p style="margin-top:8px;font-weight:700;color:#37474f;">Pago registrado el ${formatFecha(pagoMes.fecha)}</p>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:2rem;font-weight:900;font-family:'Nunito',sans-serif;color:#27ae60;">$${pagoMes.monto}</div>
+                </div>
+            </div>
+        </div>`;
+    } else {
+        cardPago.innerHTML = `
+        <div class="card" style="border-left-color:#f44336;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                <div>
+                    <span class="badge badge-rojo">✘ PENDIENTE</span>
+                    <p style="margin-top:8px;color:#37474f;font-size:0.85rem;">Tu pago de ${mesActual} aún no ha sido registrado.</p>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:2rem;font-weight:900;font-family:'Nunito',sans-serif;color:var(--primary);">$${cuota.total.toFixed(2)}</div>
+                    <small style="color:var(--text-light);">estimado</small>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // --- Recibos del mes en inicio ---
+    renderRecibosCortos(mesActual, 'recibos-inicio');
+}
+
+function debePagar(coh, mesNombre) {
+    if (!coh.fechaIngreso) return true;
+    const ingreso = new Date(coh.fechaIngreso + 'T00:00:00');
+    const idxMes  = MESES.indexOf(mesNombre);
+    const anioHoy = new Date().getFullYear();
+    const idxMesIngreso = ingreso.getMonth();
+    const anioIngreso   = ingreso.getFullYear();
+    if (anioIngreso < anioHoy) return true;
+    if (anioIngreso > anioHoy) return false;
+    return idxMes > idxMesIngreso;
+}
+
+function renderRecibosCortos(mes, containerId) {
+    const coh = inquilinoData;
+    const cuota = calcularCuotaMes(coh, mes);
+    const container = document.getElementById(containerId);
+
+    let html = '';
+    if (cuota.factAgua) {
+        const tieneImg = !!(cuota.factAgua.imagenURL || cuota.factAgua.fotoURL || cuota.factAgua.imagen);
+        html += `
+        <div class="recibo-card" ${tieneImg ? `onclick="verDetalleRecibo('agua','${mes}')" style="cursor:pointer;"` : ''}>
+            <div class="recibo-ico agua">💧</div>
+            <div class="recibo-info">
+                <strong>Recibo de Agua — ${mes}</strong>
+                <span>Total factura: $${cuota.totalAgua.toFixed(2)} ÷ ${cuota.numPersonas} personas × ${cuota.ocupantes}</span>
+                ${cuota.secNombre ? `<span style="display:block;color:var(--primary);font-size:0.78rem;">🏠 ${cuota.secNombre}</span>` : ''}
+                ${tieneImg ? '<span class="badge-foto" style="margin-top:6px;">📷 Con foto — toca para ver</span>' : ''}
+            </div>
+            <div class="recibo-monto">
+                <strong>$${cuota.cuotaAgua.toFixed(2)}</strong>
+                <small>tu parte</small>
+            </div>
+        </div>`;
+    }
+    if (cuota.factLuz) {
+        const tieneImg = !!(cuota.factLuz.imagenURL || cuota.factLuz.fotoURL || cuota.factLuz.imagen);
+        html += `
+        <div class="recibo-card" ${tieneImg ? `onclick="verDetalleRecibo('luz','${mes}')" style="cursor:pointer;"` : ''}>
+            <div class="recibo-ico luz">💡</div>
+            <div class="recibo-info">
+                <strong>Recibo de Luz — ${mes}</strong>
+                <span>Total factura: $${cuota.totalLuz.toFixed(2)} ÷ ${cuota.numPersonas} personas × ${cuota.ocupantes}</span>
+                ${cuota.secNombre ? `<span style="display:block;color:var(--primary);font-size:0.78rem;">🏠 ${cuota.secNombre}</span>` : ''}
+                ${tieneImg ? '<span class="badge-foto" style="margin-top:6px;">📷 Con foto — toca para ver</span>' : ''}
+            </div>
+            <div class="recibo-monto">
+                <strong>$${cuota.cuotaLuz.toFixed(2)}</strong>
+                <small>tu parte</small>
+            </div>
+        </div>`;
+    }
+    for (const srv of cuota.detalleServicios) {
+        html += `
+        <div class="recibo-card">
+            <div class="recibo-ico servicio">⚡</div>
+            <div class="recibo-info">
+                <strong>${srv.nombre} — ${mes}</strong>
+                <span>${srv.tipo === 'compartido' ? 'Compartido entre usuarios activos' : 'Monto fijo por persona'}</span>
+            </div>
+            <div class="recibo-monto">
+                <strong>$${srv.monto.toFixed(2)}</strong>
+                <small>tu parte</small>
+            </div>
+        </div>`;
+    }
+    if (!cuota.factAgua && !cuota.factLuz && cuota.detalleServicios.length === 0) {
+        html = `<div class="empty-state"><span class="emo">📭</span><p>No hay recibos registrados para ${mes} aún.</p></div>`;
+    }
+    container.innerHTML = html;
+}
+
+// ============================================================
+// RENDER HISTORIAL
+// ============================================================
+function renderMesGridHistorial() {
+    const grid = document.getElementById('mes-grid-historial');
+    grid.innerHTML = MESES.map(m =>
+        `<button class="btn-mes ${m === mesSeleccionado ? 'activo' : ''}"
+            onclick="seleccionarMesHistorial('${m}')">${m}</button>`
+    ).join('');
+    renderHistorialMes(mesSeleccionado);
+}
+
+function seleccionarMesHistorial(mes) {
+    mesSeleccionado = mes;
+    document.querySelectorAll('#mes-grid-historial .btn-mes').forEach(b => b.classList.remove('activo'));
+    const btns = document.querySelectorAll('#mes-grid-historial .btn-mes');
+    btns.forEach(b => { if (b.textContent.trim() === mes) b.classList.add('activo'); });
+    renderHistorialMes(mes);
+}
+
+function renderHistorial() {
+    renderHistorialMes(mesSeleccionado);
+}
+
+function renderHistorialMes(mes) {
+    const coh = inquilinoData;
+    const contenedor = document.getElementById('contenido-historial');
+    const cuota = calcularCuotaMes(coh, mes);
+    const pago  = pagos.find(p => String(p.cohabitanteId) === String(coh.id) && p.mes === mes);
+    const activo = debePagar(coh, mes);
+
+    if (!activo) {
+        contenedor.innerHTML = `<div class="empty-state"><span class="emo">📅</span><p>No eras inquilino en ${mes}. Tu fecha de ingreso es posterior a este mes.</p></div>`;
+        return;
+    }
+
+    let estadoBadge = pago
+        ? '<span class="badge badge-verde">✔ AL DÍA</span>'
+        : '<span class="badge badge-rojo">✘ PENDIENTE</span>';
+
+    // Construir tabla de recibos
+    const tieneImgAgua = cuota.factAgua && !!(cuota.factAgua.imagenURL || cuota.factAgua.fotoURL || cuota.factAgua.imagen);
+    const tieneImgLuz  = cuota.factLuz  && !!(cuota.factLuz.imagenURL  || cuota.factLuz.fotoURL  || cuota.factLuz.imagen);
+
+    let filasTabla = `<tr><td>🏠 Alquiler</td><td style="text-align:right;font-weight:700;">$${cuota.alquiler.toFixed(2)}</td></tr>`;
+    if (cuota.factAgua) filasTabla += `<tr style="cursor:pointer;" onclick="verDetalleRecibo('agua','${mes}')">
+        <td>💧 Agua (parte de $${cuota.totalAgua.toFixed(2)})
+            ${tieneImgAgua ? `<span class="evidencia-chip" title="Ver foto del recibo">📷 foto</span>` : ''}
+        </td>
+        <td style="text-align:right;">$${cuota.cuotaAgua.toFixed(2)}</td>
+    </tr>`;
+    if (cuota.factLuz) filasTabla += `<tr style="cursor:pointer;" onclick="verDetalleRecibo('luz','${mes}')">
+        <td>💡 Luz (parte de $${cuota.totalLuz.toFixed(2)})
+            ${tieneImgLuz ? `<span class="evidencia-chip" title="Ver foto del recibo">📷 foto</span>` : ''}
+        </td>
+        <td style="text-align:right;">$${cuota.cuotaLuz.toFixed(2)}</td>
+    </tr>`;
+    for (const s of cuota.detalleServicios) {
+        filasTabla += `<tr><td>⚡ ${s.nombre}</td><td style="text-align:right;">$${s.monto.toFixed(2)}</td></tr>`;
+    }
+
+    contenedor.innerHTML = `
+    <div class="card" style="border-left-color:${pago ? '#27ae60' : '#f44336'}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+            <h4 style="margin:0;">${mes} ${new Date().getFullYear()}</h4>
+            ${estadoBadge}
+        </div>
+        ${pago ? `<p style="color:#37474f;font-size:0.85rem;margin-bottom:10px;">Fecha de pago registrada: <strong>${formatFecha(pago.fecha)}</strong> — Monto: <strong>$${pago.monto}</strong></p>` : ''}
+        <h4 style="font-size:0.88rem;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Desglose estimado</h4>
+        <div class="tabla-wrap">
+            <table>
+                <tbody>${filasTabla}</tbody>
+                <tfoot>
+                    <tr>
+                        <td>TOTAL ESTIMADO</td>
+                        <td style="text-align:right;">$${cuota.total.toFixed(2)}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        ${(tieneImgAgua || tieneImgLuz) ? `
+        <p style="margin-top:12px;font-size:0.8rem;color:#1b5e20;background:#e8f5e9;padding:8px 12px;border-radius:8px;border:1px solid #a5d6a7;">
+            📷 Los recibos con <strong>chip verde "foto"</strong> tienen evidencia fotográfica. Toca la fila para verla.
+        </p>` : ''}
+    </div>`;
+}
+
+// ============================================================
+// RENDER RECIBOS
+// ============================================================
+function renderRecibos() {
+    const mes = document.getElementById('select-mes-recibos').value;
+    const coh = inquilinoData;
+    const cuota = calcularCuotaMes(coh, mes);
+
+    const lista = document.getElementById('lista-recibos');
+    let html = '';
+
+    if (cuota.factAgua) {
+        const tieneImgAgua = !!(cuota.factAgua.imagenURL || cuota.factAgua.fotoURL || cuota.factAgua.imagen);
+        html += `
+        <div class="recibo-card" onclick="verDetalleRecibo('agua','${mes}')" style="cursor:pointer;">
+            <div class="recibo-ico agua">💧</div>
+            <div class="recibo-info">
+                <strong>Recibo de Agua — ${mes}</strong>
+                <span>Compartido: $${cuota.totalAgua.toFixed(2)} ÷ ${cuota.numPersonas} personas${cuota.secNombre ? ' (' + cuota.secNombre + ')' : ''}</span>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center;">
+                    <span class="badge badge-azul" style="display:inline-flex;">Compartido</span>
+                    ${tieneImgAgua ? '<span class="badge-foto">📷 Con foto del recibo</span>' : ''}
+                </div>
+            </div>
+            <div class="recibo-monto">
+                <strong>$${cuota.cuotaAgua.toFixed(2)}</strong>
+                <small>tu parte</small>
+            </div>
+        </div>`;
+    }
+
+    if (cuota.factLuz) {
+        const tieneImgLuz = !!(cuota.factLuz.imagenURL || cuota.factLuz.fotoURL || cuota.factLuz.imagen);
+        html += `
+        <div class="recibo-card" onclick="verDetalleRecibo('luz','${mes}')" style="cursor:pointer;">
+            <div class="recibo-ico luz">💡</div>
+            <div class="recibo-info">
+                <strong>Recibo de Luz — ${mes}</strong>
+                <span>Compartido: $${cuota.totalLuz.toFixed(2)} ÷ ${cuota.numPersonas} personas${cuota.secNombre ? ' (' + cuota.secNombre + ')' : ''}</span>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center;">
+                    <span class="badge badge-naranja" style="display:inline-flex;">Compartido</span>
+                    ${tieneImgLuz ? '<span class="badge-foto">📷 Con foto del recibo</span>' : ''}
+                </div>
+            </div>
+            <div class="recibo-monto">
+                <strong>$${cuota.cuotaLuz.toFixed(2)}</strong>
+                <small>tu parte</small>
+            </div>
+        </div>`;
+    }
+
+    for (const s of cuota.detalleServicios) {
+        const tipoBadge = s.tipo === 'compartido'
+            ? '<span class="badge badge-azul" style="margin-top:6px;display:inline-flex;">Compartido</span>'
+            : '<span class="badge badge-gris" style="margin-top:6px;display:inline-flex;">Fijo</span>';
+        html += `
+        <div class="recibo-card">
+            <div class="recibo-ico servicio">⚡</div>
+            <div class="recibo-info">
+                <strong>${s.nombre} — ${mes}</strong>
+                <span>${s.tipo === 'compartido' ? 'Dividido entre usuarios que tienen este servicio' : 'Monto fijo por persona'}</span>
+                ${tipoBadge}
+            </div>
+            <div class="recibo-monto">
+                <strong>$${s.monto.toFixed(2)}</strong>
+                <small>tu parte</small>
+            </div>
+        </div>`;
+    }
+
+    if (!cuota.factAgua && !cuota.factLuz && cuota.detalleServicios.length === 0) {
+        lista.innerHTML = `<div class="empty-state"><span class="emo">📭</span><p>No hay recibos registrados para ${mes}.</p></div>`;
+        document.getElementById('box-total-recibo').style.display = 'none';
+        return;
+    }
+
+    lista.innerHTML = html;
+
+    // Desglose total
+    document.getElementById('box-total-recibo').style.display = 'block';
+    let desgl = `<div class="desglose-fila"><span>🏠 Alquiler</span><span>$${cuota.alquiler.toFixed(2)}</span></div>`;
+    if (cuota.factAgua) desgl += `<div class="desglose-fila"><span>💧 Agua</span><span>$${cuota.cuotaAgua.toFixed(2)}</span></div>`;
+    if (cuota.factLuz)  desgl += `<div class="desglose-fila"><span>💡 Luz</span><span>$${cuota.cuotaLuz.toFixed(2)}</span></div>`;
+    for (const s of cuota.detalleServicios) desgl += `<div class="desglose-fila"><span>⚡ ${s.nombre}</span><span>$${s.monto.toFixed(2)}</span></div>`;
+    desgl += `<div class="desglose-total"><span>TOTAL</span><span>$${cuota.total.toFixed(2)}</span></div>`;
+    document.getElementById('desglose-recibo').innerHTML = desgl;
+}
+
+function verDetalleRecibo(tipo, mes) {
+    const coh   = inquilinoData;
+    const cuota = calcularCuotaMes(coh, mes);
+
+    const esc = tipo === 'agua'
+        ? { titulo: '💧 Detalle — Recibo de Agua', fact: cuota.factAgua, total: cuota.totalAgua, cuota: cuota.cuotaAgua }
+        : { titulo: '💡 Detalle — Recibo de Luz', fact: cuota.factLuz, total: cuota.totalLuz, cuota: cuota.cuotaLuz };
+
+    if (!esc.fact) return;
+
+    // Evidencia fotográfica (si el admin subió imagen)
+    const imgURL = esc.fact.imagenURL || esc.fact.fotoURL || esc.fact.imagen || '';
+    const evidenciaHTML = imgURL ? `
+        <div class="evidencia-wrap">
+            <div class="evidencia-label">📷 Foto del recibo original</div>
+            <img src="${imgURL}" alt="Foto del recibo" loading="lazy"
+                onclick="abrirLightbox('${imgURL.replace(/'/g,"\\'")}')">
+            <button class="evidencia-btn-ver" onclick="abrirLightbox('${imgURL.replace(/'/g,"\\'")}')">
+                🔍 Ver imagen completa
+            </button>
+        </div>` : `
+        <div style="margin-top:16px;background:#f9fbe7;border:1.5px dashed #dce775;border-radius:12px;padding:14px;text-align:center;">
+            <p style="color:#827717;font-size:0.83rem;">📷 El administrador no ha subido foto del recibo original para este mes.</p>
+        </div>`;
+
+    document.getElementById('modal-recibo-titulo').textContent = esc.titulo + ' — ' + mes;
+    document.getElementById('modal-recibo-body').innerHTML = `
+        <div class="info-box">
+            <p><strong>Mes:</strong> ${mes}</p>
+            ${cuota.secNombre ? `<p><strong>Sección:</strong> ${cuota.secNombre}</p>` : ''}
+            <p style="margin-top:8px;"><strong>Total de la factura:</strong> $${esc.total.toFixed(2)}</p>
+            <p><strong>Número de personas que comparten:</strong> ${cuota.numPersonas}</p>
+            <p><strong>Tus ocupantes:</strong> ${cuota.ocupantes}</p>
+        </div>
+        <div class="desglose">
+            <div class="desglose-fila">
+                <span>Cálculo</span>
+                <span>$${esc.total.toFixed(2)} ÷ ${cuota.numPersonas} × ${cuota.ocupantes}</span>
+            </div>
+            <div class="desglose-total">
+                <span>TU PARTE</span>
+                <span>$${esc.cuota.toFixed(2)}</span>
+            </div>
+        </div>
+        ${evidenciaHTML}`;
+
+    document.getElementById('modal-recibo-detalle').classList.add('visible');
+}
+
+// ============================================================
+// LIGHTBOX
+// ============================================================
+function abrirLightbox(url) {
+    document.getElementById('lightbox-img').src = url;
+    document.getElementById('lightbox-overlay').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+}
+function cerrarLightbox() {
+    document.getElementById('lightbox-overlay').classList.remove('visible');
+    document.getElementById('lightbox-img').src = '';
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') cerrarLightbox();
+});
+
+// ============================================================
+// RENDER SERVICIOS ADICIONALES
+// ============================================================
+function renderServiciosAdicionales() {
+    const coh = inquilinoData;
+
+    // Servicios activos
+    const activos = serviciosOpcionales.filter(srv => coh.servicios && coh.servicios[srv.id]);
+    const activosDiv = document.getElementById('servicios-activos');
+    if (activos.length === 0) {
+        activosDiv.innerHTML = `<div class="empty-state" style="padding:20px 0;"><span class="emo">📭</span><p>No tienes servicios adicionales activos actualmente.</p></div>`;
+    } else {
+        activosDiv.innerHTML = activos.map(srv => `
+            <div class="solicitud-item" style="border-left:4px solid var(--accent-dark);">
+                <div class="solicitud-ico">⚡</div>
+                <div class="solicitud-info">
+                    <strong>${srv.nombre}</strong>
+                    <small>$${parseFloat(srv.monto).toFixed(2)} / mes — ${srv.tipo === 'compartido' ? 'compartido' : 'fijo'}</small>
+                </div>
+                <span class="badge badge-verde">Activo</span>
+            </div>`).join('');
+    }
+
+    // Solicitar servicios no activos ni con solicitud pendiente
+    const misSolicitudesPendientes = solicitudes.filter(s =>
+        String(s.cohabitanteId) === String(coh.id) && s.estado === 'pendiente'
+    );
+    const pendienteIds = misSolicitudesPendientes.map(s => s.servicioId);
+
+    const disponibles = serviciosOpcionales.filter(srv =>
+        !(coh.servicios && coh.servicios[srv.id])  // no activo
+    );
+
+    const grid = document.getElementById('grid-solicitar-servicios');
+    const noDisponibles = document.getElementById('no-servicios-disponibles');
+
+    if (disponibles.length === 0) {
+        grid.innerHTML = '';
+        noDisponibles.style.display = 'block';
+    } else {
+        noDisponibles.style.display = 'none';
+        grid.innerHTML = disponibles.map(srv => {
+            const pendiente = pendienteIds.includes(srv.id);
+            return `
+            <div class="btn-servicio-sol ${pendiente ? 'pendiente' : ''}"
+                onclick="${pendiente ? '' : `abrirModalSolicitud('${srv.id}')`}"
+                style="${pendiente ? 'cursor:not-allowed;' : ''}">
+                <span class="srv-ico">⚡</span>
+                <span>${srv.nombre}</span>
+                <small>$${parseFloat(srv.monto).toFixed(2)} — ${srv.tipo === 'compartido' ? 'compartido' : 'fijo'}</small>
+                ${pendiente ? '<span class="badge badge-naranja" style="margin-top:4px;">Solicitud enviada</span>' : ''}
+            </div>`;
+        }).join('');
+    }
+
+    // Mis solicitudes
+    const listaSolicitudes = document.getElementById('lista-mis-solicitudes');
+    const misSolicitudes = solicitudes.filter(s => String(s.cohabitanteId) === String(coh.id));
+    if (misSolicitudes.length === 0) {
+        listaSolicitudes.innerHTML = `<div class="empty-state" style="padding:20px 0;"><span class="emo">📋</span><p>No has enviado ninguna solicitud aún.</p></div>`;
+    } else {
+        listaSolicitudes.innerHTML = misSolicitudes.map(s => {
+            const srv = serviciosOpcionales.find(x => x.id === s.servicioId);
+            const nombre = srv ? srv.nombre : s.servicioNombre || 'Servicio';
+            const badge = s.estado === 'pendiente'
+                ? '<span class="badge badge-naranja">⏳ Pendiente</span>'
+                : s.estado === 'aprobada'
+                ? '<span class="badge badge-verde">✅ Aprobada</span>'
+                : '<span class="badge badge-rojo">❌ Rechazada</span>';
+            return `
+            <div class="solicitud-item">
+                <div class="solicitud-ico">📤</div>
+                <div class="solicitud-info">
+                    <strong>${nombre}</strong>
+                    <small>Enviada el ${formatFecha(s.fecha) || '—'}</small>
+                    ${s.comentario ? `<small style="display:block;margin-top:2px;color:#546e7a;">"${s.comentario}"</small>` : ''}
+                </div>
+                ${badge}
+            </div>`;
+        }).join('');
+    }
+
+    // Badge en tab
+    const pendienteCount = misSolicitudesPendientes.length;
+    const tabSrv = document.getElementById('tab-servicios');
+    tabSrv.innerHTML = `⚡ Servicios${pendienteCount > 0 ? `<span class="tab-notif">${pendienteCount}</span>` : ''}`;
+}
+
+// ============================================================
+// MODAL SOLICITUD DE SERVICIO
+// ============================================================
+let srvSolicitadoId = null;
+
+function abrirModalSolicitud(srvId) {
+    srvSolicitadoId = srvId;
+    const srv = serviciosOpcionales.find(s => s.id === srvId);
+    if (!srv) return;
+    document.getElementById('srv-solicitud-nombre').textContent = srv.nombre;
+    document.getElementById('srv-solicitud-monto').textContent  = `$${parseFloat(srv.monto).toFixed(2)} / mes (${srv.tipo === 'compartido' ? 'compartido entre usuarios' : 'monto fijo'})`;
+    document.getElementById('comentario-solicitud').value = '';
+    document.getElementById('err-solicitud').classList.remove('visible');
+    document.getElementById('modal-solicitud').classList.add('visible');
+}
+
+async function confirmarSolicitud() {
+    if (!srvSolicitadoId || !adminUID) return;
+    const coh = inquilinoData;
+    const srv = serviciosOpcionales.find(s => s.id === srvSolicitadoId);
+    if (!srv) return;
+
+    // Verificar no hay solicitud pendiente ya
+    const existe = solicitudes.find(s =>
+        String(s.cohabitanteId) === String(coh.id) &&
+        s.servicioId === srvSolicitadoId &&
+        s.estado === 'pendiente'
+    );
+    if (existe) {
+        document.getElementById('err-solicitud').textContent = 'Ya tienes una solicitud pendiente para este servicio.';
+        document.getElementById('err-solicitud').classList.add('visible');
+        return;
+    }
+
+    mostrarLoader();
+    try {
+        const id       = String(Date.now());
+        const ahora    = new Date();
+        const comentario = document.getElementById('comentario-solicitud').value.trim();
+        const nueva = {
+            id,
+            cohabitanteId: String(coh.id),
+            nombreInquilino: `${coh.n1} ${coh.a1}`,
+            duiInquilino:    coh.dui,
+            servicioId:      srvSolicitadoId,
+            servicioNombre:  srv.nombre,
+            estado:          'pendiente',
+            fecha:           ahora.toISOString().split('T')[0],
+            comentario,
+            tipo:            'solicitud_servicio'
+        };
+
+        await db.collection('usuarios').doc(adminUID).collection('solicitudes').doc(id).set(nueva);
+        solicitudes.push(nueva);
+
+        // Crear notificación para el admin
+        const notif = {
+            id:      String(Date.now() + 1),
+            tipo:    'solicitud_servicio',
+            mensaje: `${coh.n1} ${coh.a1} solicitó agregar el servicio "${srv.nombre}"`,
+            estado:  'pendiente',   // pendiente = no omitida
+            fecha:   ahora.toISOString().split('T')[0],
+            hora:    ahora.toLocaleTimeString('es-SV', { hour: '2-digit', minute: '2-digit' }),
+            solicitudId:     id,
+            cohabitanteId:   String(coh.id),
+            servicioId:      srvSolicitadoId,
+            servicioNombre:  srv.nombre,
+            nombreInquilino: `${coh.n1} ${coh.a1}`,
+            duiInquilino:    coh.dui
+        };
+        await db.collection('usuarios').doc(adminUID).collection('notificaciones').doc(notif.id).set(notif);
+
+        cerrarModal('modal-solicitud');
+        renderServiciosAdicionales();
+    } catch(e) {
+        console.error(e);
+        document.getElementById('err-solicitud').textContent = 'Error al enviar la solicitud. Verifica tu conexión.';
+        document.getElementById('err-solicitud').classList.add('visible');
+    } finally {
+        ocultarLoader();
+    }
+}
+
+// ============================================================
+// RENDER PERFIL
+// ============================================================
+function renderPerfil() {
+    const coh = inquilinoData;
+    if (!coh) return;
+
+    const nombre = `${coh.n1} ${coh.n2 || ''} ${coh.a1} ${coh.a2 || ''}`.replace(/\s+/g, ' ').trim();
+    const ini = coh.n1 ? coh.n1[0] : '?';
+    document.getElementById('perfil-avatar').textContent = ini;
+    document.getElementById('perfil-nombre').textContent = nombre;
+    document.getElementById('perfil-dui').textContent    = `DUI: ${coh.dui}`;
+
+    const sec = secciones.find(s => String(s.id) === String(coh.seccionId));
+    const secNombre = sec ? sec.nombre : '—';
+
+    const srvsActivos = serviciosOpcionales
+        .filter(srv => coh.servicios && coh.servicios[srv.id])
+        .map(srv => srv.nombre).join(', ') || 'Ninguno';
+
+    document.getElementById('perfil-datos').innerHTML = `
+        <div class="perfil-fila"><label>Teléfono</label><span>${coh.tel || '—'}</span></div>
+        <div class="perfil-fila"><label>Alquiler</label><span>$${parseFloat(coh.alquiler||0).toFixed(2)} / mes</span></div>
+        <div class="perfil-fila"><label>Ocupantes</label><span>${coh.ocupantes || 1} persona(s)</span></div>
+        <div class="perfil-fila"><label>Sección/Zona</label><span>${secNombre}</span></div>
+        <div class="perfil-fila"><label>Fecha de ingreso</label><span>${coh.fechaIngreso ? new Date(coh.fechaIngreso+'T00:00:00').toLocaleDateString('es-SV') : '—'}</span></div>
+        <div class="perfil-fila"><label>Servicios activos</label><span>${srvsActivos}</span></div>
+        <div class="perfil-fila"><label>Administración</label><span>${adminTitulo}</span></div>`;
+}
+
+// ============================================================
+// CAMBIAR CONTRASEÑA
+// ============================================================
+function abrirModalCambiarPass() {
+    document.getElementById('cp-actual').value  = '';
+    document.getElementById('cp-nueva1').value  = '';
+    document.getElementById('cp-nueva2').value  = '';
+    document.getElementById('err-cambiar-pass').classList.remove('visible');
+    document.getElementById('ok-cambiar-pass').classList.remove('visible');
+    document.getElementById('modal-cambiar-pass').classList.add('visible');
+}
+
+async function confirmarCambioPass() {
+    const actual = document.getElementById('cp-actual').value;
+    const nueva1 = document.getElementById('cp-nueva1').value;
+    const nueva2 = document.getElementById('cp-nueva2').value;
+
+    document.getElementById('err-cambiar-pass').classList.remove('visible');
+    document.getElementById('ok-cambiar-pass').classList.remove('visible');
+
+    if (!actual || !nueva1 || !nueva2)
+        return mostrarError('err-cambiar-pass', 'Completa todos los campos.');
+    if (nueva1.length < 6)
+        return mostrarError('err-cambiar-pass', 'La nueva contraseña debe tener al menos 6 caracteres.');
+    if (nueva1 !== nueva2)
+        return mostrarError('err-cambiar-pass', 'La nueva contraseña y su confirmación no coinciden.');
+    if (actual === nueva1)
+        return mostrarError('err-cambiar-pass', 'La nueva contraseña debe ser diferente a la actual.');
+
+    mostrarLoader();
+    try {
+        // Verificar contraseña actual
+        const hashActual = await hashPassword(actual);
+        if (hashActual !== inquilinoData.passwordHash) {
+            ocultarLoader();
+            return mostrarError('err-cambiar-pass', 'La contraseña actual es incorrecta.');
+        }
+
+        // Guardar nueva contraseña
+        const hashNueva = await hashPassword(nueva1);
+        await db.collection('usuarios').doc(adminUID)
+            .collection('cohabitantes').doc(String(inquilinoData.id))
+            .set({ passwordHash: hashNueva }, { merge: true });
+
+        // Actualizar en memoria
+        inquilinoData.passwordHash = hashNueva;
+
+        document.getElementById('ok-cambiar-pass').textContent = '✅ Contraseña actualizada correctamente.';
+        document.getElementById('ok-cambiar-pass').classList.add('visible');
+        document.getElementById('cp-actual').value = '';
+        document.getElementById('cp-nueva1').value = '';
+        document.getElementById('cp-nueva2').value = '';
+
+        setTimeout(() => cerrarModal('modal-cambiar-pass'), 2000);
+    } catch(e) {
+        console.error(e);
+        mostrarError('err-cambiar-pass', 'Error al guardar. Verifica tu conexión e intenta de nuevo.');
+    } finally {
+        ocultarLoader();
+    }
+}
+
+// ============================================================
+// RECUPERAR CONTRASEÑA (olvidé)
+// ============================================================
+function abrirModalRecuperarPass() {
+    document.getElementById('modal-recuperar-pass').classList.add('visible');
+}
+
+// ============================================================
+// CERRAR MODALES AL HACER CLIC FUERA
+// ============================================================
+['modal-solicitud','modal-recibo-detalle','modal-cambiar-pass','modal-recuperar-pass'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', e => { if (e.target === el) el.classList.remove('visible'); });
+});
+
+</script>
+</body>
+</html>
